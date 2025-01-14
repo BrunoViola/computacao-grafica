@@ -18,25 +18,25 @@ void desenha(){
 
             glVertex2f(10, 0); 
             glVertex2f(210, 0); 
-            glVertex2f(10, 240);
-            glVertex2f(210, 240);
+            glVertex2f(10, 200);
+            glVertex2f(210, 200);
         glEnd();
 
         //chamine
         glBegin(GL_QUAD_STRIP);
-            glColor3f(1, 0, 0);
-            glVertex2f(40, 240);
-            glVertex2f(70, 240);
-            glVertex2f(40, 340);
-            glVertex2f(70, 340);
+            glColor3f(0.545,0.27,0.075); // cor marrom
+            glVertex2f(40, 200);
+            glVertex2f(70, 200);
+            glVertex2f(40, 350);
+            glVertex2f(70, 350);
         glEnd();
 
         //telhado
         glBegin(GL_TRIANGLES);
-            glColor3f(0.545,0.27,0.075); // cor marrom
-            glVertex2f(10, 240);
-            glVertex2f(210, 240);
-            glVertex2f(110, 360);
+            glColor3f(1, 0, 0);
+            glVertex2f(10, 200);
+            glVertex2f(210, 200);
+            glVertex2f(110, 320);
         glEnd();
         
         //porta
@@ -57,40 +57,6 @@ void desenha(){
             glVertex2f(180, 60); 
             glVertex2f(120, 120);
             glVertex2f(180, 120);
-        glEnd();
-
-        //grade janela do primeiro andar
-        glBegin(GL_LINE_STRIP);
-            glColor3f(0.2,0.2,0.2); // cor escura para grade
-            glVertex2f(150, 60); 
-            glVertex2f(150, 120);
-        glEnd();
-        glBegin(GL_LINE_STRIP);
-            glColor3f(0.2,0.2,0.2); // cor escura para grade
-            glVertex2f(180, 90); 
-            glVertex2f(120, 90);
-        glEnd();
-
-        //janela segundo andar
-        glBegin(GL_QUAD_STRIP);
-            glColor3f(0.678,0.847,0.902); // cor parecida com skyblue
-
-            glVertex2f(120, 150); 
-            glVertex2f(180, 150); 
-            glVertex2f(120, 210);
-            glVertex2f(180, 210);
-        glEnd();
-
-        //grade janela do segundo andar
-        glBegin(GL_LINE_STRIP);
-            glColor3f(0.2,0.2,0.2); // cor escura para grade
-            glVertex2f(150, 150); 
-            glVertex2f(150, 210);
-        glEnd();
-        glBegin(GL_LINE_STRIP);
-            glColor3f(0.2,0.2,0.2); // cor escura para grade
-            glVertex2f(180, 180); 
-            glVertex2f(120, 180);
         glEnd();
        
 }
