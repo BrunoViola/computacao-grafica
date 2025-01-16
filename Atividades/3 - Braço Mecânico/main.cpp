@@ -12,43 +12,6 @@
 #include <unistd.h>
 #endif
 
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-        switch (key) {
-            case GLFW_KEY_W:
-                glScalef(2, 1, 1);
-                break;
-            case GLFW_KEY_S:
-                glScalef(0.5, 1, 1);
-                break;
-            case GLFW_KEY_A:
-                glRotated(45, 0, 0, 1);
-                break;
-            case GLFW_KEY_D:
-                glRotated(-45, 0, 0, 1);
-                break;
-            case GLFW_KEY_RIGHT:
-                glTranslatef(10, 0, 0);
-                break;
-            case GLFW_KEY_LEFT:
-                glTranslatef(-10, 0, 0);
-                break;
-            case GLFW_KEY_UP:
-                glTranslatef(0, 10, 0);
-                break;
-            case GLFW_KEY_DOWN:
-                glTranslatef(0, -10, 0);
-                break;
-            case GLFW_KEY_ESCAPE:
-                glfwSetWindowShouldClose(window, true);
-                break;
-            default:
-                break;
-        }
-    }
-}
-
 void desenhaBase(){
     glBegin(GL_QUAD_STRIP);
         glColor3f(0.678,0.847,0.902);
@@ -112,7 +75,6 @@ int main(void)
     glOrtho(0, 640, 0, 480, -1, 1);           // Define uma projeção ortográfica 2D
 
     /* Define a função de callback para o teclado */ 
-    glfwSetKeyCallback(window, key_callback);
 
     /* Loop de execução da janela enquanto não for fechada */
     while (!glfwWindowShouldClose(window))
