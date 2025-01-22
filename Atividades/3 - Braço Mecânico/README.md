@@ -3,4 +3,4 @@ Consiste em um modelo de braço robótico com 3 partes (base fixa, braço inferi
 transformações do braço inferior afetam as transformações do braçosuperior, mas não o contrário.
 <br>
 ## 👀 Gif demonstrando a execução
-![Demonstração do Projeto](Gifs/ex-3.gif)
+![Demonstração do Projeto](../Gifs/ex-3.gif)
