@@ -8,4 +8,4 @@ Criação de efeitos de:
 
 ## 👀 Gif demonstrando a execução
 
-![Demonstração do Projeto](Gifs/ex-4.gif)
+![Demonstração do Projeto](../Gifs/ex-4.gif)
