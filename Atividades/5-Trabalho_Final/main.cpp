@@ -1,11 +1,23 @@
 #include <GL/glut.h>
+#include <math.h>
 
 float ballY = 2.0f;
 float ballX = 0.0f;
 float ballZ = 0.0f;
+float bonecoX = 0.0f;
+float bonecoY = 2.0f;
+float bonecoZ = 1.0f;
 float speedY = 0.0f;
+float cameraPosX = -2.0f;
+float cameraPosY = 2.0f;
+float cameraPosZ = 1.0f;
 const float gravity = -0.01f;
+int ultimoMovimentoEsquerda = 0;
+int ultimoMovimentoDireita = 0;
+int ultimoMovimentoCima = 0;
+int ultimoMovimentoBaixo = 0;
 
+// ======================== Funções de desenho ========================
 // Função para desenhar a bola
 void desenhaBola() {
     glPushMatrix();
@@ -68,7 +80,7 @@ void desenhaPernas() {
 // Função para desenhar o boneco
 void desenhaBoneco() {
     glPushMatrix();
-    glTranslatef(ballX, ballY+1, ballZ);
+    glTranslatef(bonecoX, bonecoY, bonecoZ);
     desenhaCabeca();
     desenhaTronco();
     desenhaBracos();
@@ -90,19 +102,51 @@ void desenhaParede(){
     glScalef(10.0f, 7.0f, 1.0f);
     glutSolidCube(1.0);
     glPopMatrix();
-}
 
-// Atualiza a posição da bola
+    // muriho da frente
+    glPushMatrix();
+    glTranslatef(0.0f, 0.0f, 4.0f);
+    glScalef(10.0f, 3.0f, 1.0f);
+    glutSolidCube(1.0);
+    glPopMatrix();
+}
+// ======================================================================
+// ======================== Funções de movimento =======================
+// Atualiza a posição da bola de acordo com a gravidade
 void atualizaPosicao() {
     speedY += gravity;
     ballY += speedY;
+    bonecoY += speedY;
 
     // Verifica se a bola tocou a plataforma
     if (ballY <= -1.0f) {
         ballY = -1.0f;
+        bonecoY = 0.0f;
         speedY = -speedY * 0.8f;  // Faz a bola quicar com um fator de amortecimento
     }
 
+    glutPostRedisplay();
+}
+
+void colisaoBolaBoneco(){
+    float dx = ballX - bonecoX;  // Diferença no eixo X
+    float dz = ballZ - bonecoZ; // Diferença no eixo Z
+    float distancia = sqrt(dx * dx + dz * dz);  // Distância euclidiana
+
+    float raioBoneco = 0.3f;
+    float raioBola = 0.3f;
+
+    if (distancia < (raioBoneco + raioBola)){
+        if(ultimoMovimentoDireita == 1){
+            ballX+=0.1f;
+        }else if(ultimoMovimentoEsquerda == 1){
+            ballX-=0.1f;
+        }else if(ultimoMovimentoCima == 1){
+            ballZ+=0.1f;
+        }else if(ultimoMovimentoBaixo == 1){
+            ballZ-=0.1f;
+        }
+    }
     glutPostRedisplay();
 }
 
@@ -136,17 +180,58 @@ void configurarCamera() {
     glMatrixMode(GL_MODELVIEW);
 }
 
+void ultimoMovimento(int opcao){
+    if(opcao == 1){
+        ultimoMovimentoEsquerda = 1;
+        ultimoMovimentoDireita = 0;
+        ultimoMovimentoCima = 0;
+        ultimoMovimentoBaixo = 0;
+    } else if(opcao==2){
+        ultimoMovimentoEsquerda = 0;
+        ultimoMovimentoDireita = 1;
+        ultimoMovimentoCima = 0;
+        ultimoMovimentoBaixo = 0;
+    } else if(opcao==3){
+        ultimoMovimentoEsquerda = 0;
+        ultimoMovimentoDireita = 0;
+        ultimoMovimentoCima = 1;
+        ultimoMovimentoBaixo = 0;
+    } else if(opcao==4){
+        ultimoMovimentoEsquerda = 0;
+        ultimoMovimentoDireita = 0;
+        ultimoMovimentoCima = 0;
+        ultimoMovimentoBaixo = 1;
+    }
+}
+
 void teclasEspeciais(int key, int x, int y) {
     if (key == GLUT_KEY_LEFT) {
-        ballX-=0.1f;  // Move para a esquerda
+        bonecoX-=0.1f;  // Move para a esquerda
+        ultimoMovimento(1);
     } else if (key == GLUT_KEY_RIGHT) {
-        ballX+=0.1f; // Move para a direita
-    } else if (key == GLUT_KEY_UP) {
-        ballZ += 0.1f;  // Pula
+        bonecoX+=0.1f; // Move para a direita
+        ultimoMovimento(2);
     } else if (key == GLUT_KEY_DOWN) {
-        ballZ-=0.1f;  // Move para baixo
+        bonecoZ += 0.1f;  // Pula
+        ultimoMovimento(3);
+    } else if (key == GLUT_KEY_UP) {
+        bonecoZ-=0.1f;  // Move para baixo
+        ultimoMovimento(4);
     }
     glutPostRedisplay();  // Atualiza a tela após o movimento
+}
+
+void teclado(unsigned char key, int x, int y) {
+    switch (key) {
+        case 'w': cameraPosX += 0.1f; break;  // Move para cima
+        case 's': cameraPosX -= 0.1f; break;  // Move para baixo
+        case 'a': cameraPosY -= 0.1f; break;  // Move para esquerda
+        case 'd': cameraPosY += 0.1f; break;  // Move para direita
+        case 'q': cameraPosZ += 0.1f; break;  // Aproxima
+        case 'e': cameraPosZ -= 0.1f; break;  // Afasta
+        case 27:  exit(0); // Tecla ESC fecha o programa
+    }
+    glutPostRedisplay();
 }
 
 // Função para exibir a cena
@@ -154,7 +239,7 @@ void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // Limpa a tela
     glLoadIdentity();
     gluLookAt(
-        -1.0f, 1.0f, 0.0f,  // Posição da câmera
+        cameraPosX, cameraPosY, cameraPosZ,  // Posição da câmera
         0.0f, 0.0f, -1.0f,  // Ponto de visão
         0.0f, 1.0f, 0.0f   // Vetor Up
     );
@@ -164,7 +249,7 @@ void display() {
     desenhaParede();
     desenhaBola();  // Desenha a bola
     desenhaBoneco();  // Desenha o boneco
-
+    colisaoBolaBoneco();
     glutSwapBuffers();  // Troca os buffers
 }
 
@@ -178,6 +263,7 @@ int main(int argc, char** argv) {
     glutDisplayFunc(display);  // Função de exibição
     glutTimerFunc(16, timer, 0);  // Inicia o timer para atualizar a posição da bola
     glutSpecialFunc(teclasEspeciais);  // Função para capturar teclas especiais
+    glutKeyboardFunc(teclado);
     glutMainLoop();  // Inicia o loop principal do GLUT
 
     return 0;
