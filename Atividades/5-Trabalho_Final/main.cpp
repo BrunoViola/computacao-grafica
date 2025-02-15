@@ -5,20 +5,33 @@
 float ballY = 2.0f;
 float ballX = 0.0f;
 float ballZ = 0.0f;
+
 float bonecoX = 0.0f;
 float bonecoY = 2.0f;
 float bonecoZ = 1.0f;
+
 float speedY = 0.0f;
 float speedZ = 0.0f;
 float speedX = 0.0f;
+float forca = 2.0f;
+
 float cameraPosX = -2.0f;
 float cameraPosY = 2.0f;
 float cameraPosZ = 1.0f;
+
 const float gravity = -0.01f;
+
 int ultimoMovimentoEsquerda = 0;
 int ultimoMovimentoDireita = 0;
 int ultimoMovimentoCima = 0;
 int ultimoMovimentoBaixo = 0;
+
+float angulo = 0.0f;  // Ângulo de rotação
+float raio = 5.0f;    // Distância da câmera até o objeto
+float cameraY = 1.0f; // Altura da câmera
+
+// ======================== Protótipos de funções ========================
+void ultimoMovimento(int opcao);
 
 // ======================== Funções de desenho ========================
 // Função para desenhar a bola
@@ -104,19 +117,63 @@ void desenhaParede(){
     glTranslatef(0.0f, 2.0f, -6.0f);
     glScalef(10.0f, 7.0f, 1.0f);
     glutSolidCube(1.0);
+    glPopMatrix(); 
+}
+
+void desenhaArquibancadaDireita(){
+    glPushMatrix(); //primeiro degrau
+    glTranslatef(5.0f, -1.0f, 0.5f);
+    glScalef(1.0f, 1.0f, 14.0f);
+    glutSolidCube(1.0);
     glPopMatrix();
 
-    // murinho da frente
-    glPushMatrix();
-    glTranslatef(0.0f, 0.0f, 7.0f);
-    glScalef(10.0f, 3.0f, 1.0f);
+    glPushMatrix(); //segundo degrau
+    glTranslatef(6.0f, 0.0f, 1.5f);
+    glScalef(1.0f, 1.0f, 16.0f);
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix(); //terceiro degrau
+    glTranslatef(7.0f, 1.0f, 1.5f);
+    glScalef(1.0f, 1.0f, 16.0f);
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix(); //quarto degrau
+    glTranslatef(7.0f, 1.0f, 1.5f);
+    glScalef(1.0f, 1.0f, 16.0f);
     glutSolidCube(1.0);
     glPopMatrix();
     
-    // murinho da direita
-    glPushMatrix();
-    glTranslatef(5.0f, 0.0f, 0.5f);
-    glScalef(1.0f, 3.0f, 14.0f);
+    glPushMatrix(); //quinto degrau
+    glTranslatef(8.0f, 2.0f, 1.5f);
+    glScalef(1.0f, 1.0f, 16.0f);
+    glutSolidCube(1.0);
+    glPopMatrix();
+}
+
+void desenhaArquibancadaFrente(){
+    glPushMatrix(); //primeiro degrau
+    glTranslatef(0.5f, -1.0f, 7.0f);
+    glScalef(11.0f, 1.0f, 1.0f);
+    glutSolidCube(1.0);
+    glPopMatrix();
+    
+    glPushMatrix(); //segundo degrau
+    glTranslatef(1.0f, 0.0f, 8.0f);
+    glScalef(12.0f, 1.0f, 1.0f);
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix(); //terceiro degrau
+    glTranslatef(1.75f, 1.0f, 9.0f);
+    glScalef(13.5f, 1.0f, 1.0f);
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    glPushMatrix(); //quarto degrau
+    glTranslatef(1.75f, 2.0f, 10.0f);
+    glScalef(13.5f, 1.0f, 1.0f);
     glutSolidCube(1.0);
     glPopMatrix();
 }
@@ -160,7 +217,7 @@ void atualizaPosicaoX(){
             speedX-=0.1f;
         }
     }else if(ultimoMovimentoDireita){
-        if(ballX <= 5.0f && speedX > 0){
+        if(ballX <= 5.0f && speedX > 0){ //o deslocamento final vai ser speedX*10*ballX
             ballX += 0.09f;
             speedX-=0.1f;
         }
@@ -179,13 +236,13 @@ void colisaoBolaBoneco(){
 
     if (distancia < (raioBoneco + raioBola)){
         if(ultimoMovimentoDireita == 1){
-            speedX = 2.0f;
+            speedX = forca;
         }else if(ultimoMovimentoEsquerda == 1){
-            speedX = 2.0f;
+            speedX = forca;
         }else if(ultimoMovimentoCima == 1){
-            speedZ = 2.0f;
+            speedZ = forca;
         }else if(ultimoMovimentoBaixo == 1){
-            speedZ=3.0f;
+            speedZ = forca;
         }
     }
     
@@ -199,18 +256,22 @@ void colisaoBolaParede(){
     float paredeDireita = 5.0f;
     float raioBola = 1.0f;
     
-    // Verifica se a bola colidiu com a parede no eixo X
+    // Verifica se a bola colidiu com as paredes
     if (paredeTras - ballZ >= raioBola) {
         printf("bateu\n");
+        ultimoMovimento(0);//corta o efeito do toque na bola
         ballZ += 0.5f;
     }else if(paredeFrente-ballZ<=raioBola){
         printf("bateu\n");
+        ultimoMovimento(0);
         ballZ-= 0.5f;
     }else if(paredeEsquerda-ballX>=raioBola){
         printf("bateu\n");
+        ultimoMovimento(0);
         ballX+=0.5f;
     }else if(paredeDireita-ballX<=raioBola){
         printf("bateu\n");
+        ultimoMovimento(0);
         ballX-=0.5f;
     }
     glutPostRedisplay();
@@ -267,9 +328,17 @@ void ultimoMovimento(int opcao){
         ultimoMovimentoDireita = 0;
         ultimoMovimentoCima = 0;
         ultimoMovimentoBaixo = 1;
+    }else if(opcao==0){ //esse aqui serve para evitar que a bola fique se movendo sozinha perto da parede
+        ultimoMovimentoEsquerda = 0;
+        ultimoMovimentoDireita = 0;
+        ultimoMovimentoCima = 0;
+        ultimoMovimentoBaixo = 0;
+        speedX = 0.0f;
+        speedZ = 0.0f;
     }
 }
 
+// ======================== Funções de teclado =========================
 void teclasEspeciais(int key, int x, int y) {
     if (key == GLUT_KEY_LEFT) {
         bonecoX-=0.1f;  // Move para a esquerda
@@ -289,16 +358,20 @@ void teclasEspeciais(int key, int x, int y) {
 
 void teclado(unsigned char key, int x, int y) {
     switch (key) {
-        case 'w': cameraPosX += 0.1f; break;  // Move para cima
-        case 's': cameraPosX -= 0.1f; break;  // Move para baixo
-        case 'a': cameraPosY -= 0.1f; break;  // Move para esquerda
-        case 'd': cameraPosY += 0.1f; break;  // Move para direita
-        case 'q': cameraPosZ += 0.1f; break;  // Aproxima
-        case 'e': cameraPosZ -= 0.1f; break;  // Afasta
-        case 27:  exit(0); // Tecla ESC fecha o programa
+        case 'a': angulo -= 0.1f; break;  // Gira para a esquerda
+        case 'd': angulo += 0.1f; break;  // Gira para a direita
+        case 'w': cameraY += 0.5f; break; // Sobe
+        case 's': cameraY -= 0.5f; break; // Desce
+        case 'q': raio -= 0.5f; break;    // Aproxima a câmera
+        case 'e': raio += 0.5f; break;    // Afasta a câmera
+        case '+': forca += 0.5f; printf("Força: %.2f\n", forca); break;   // Aumenta a força
+        case '-': forca -= 0.5f; printf("Força: %.2f\n", forca); break;   // Diminui a força
+        case 27: exit(0); // Tecla ESC fecha o programa
     }
     glutPostRedisplay();
 }
+// ======================================================================
+
 void renderText(float x, float y, char *string) {
     glRasterPos2f(x, y); // Define a posição do texto
     for (char *c = string; *c != '\0'; c++) {
@@ -309,15 +382,18 @@ void renderText(float x, float y, char *string) {
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // Limpa a tela
     glLoadIdentity();
-    gluLookAt(
-        cameraPosX, cameraPosY, cameraPosZ,  // Posição da câmera
-        0.0f, 0.0f, -1.0f,  // Ponto de visão
-        0.0f, 1.0f, 0.0f   // Vetor Up
-    );
+    float cameraX = raio * sin(angulo);
+    float cameraZ = raio * cos(angulo);
+
+    gluLookAt(cameraX, cameraY, cameraZ,  // Posição da câmera
+              0.0f, 0.0f, 0.0f,  // Olha para o centro
+              0.0f, 1.0f, 0.0f);
     configurarCamera();  // Configuração da câmera
     configurarIluminacao();  // Configuração da iluminação
     desenhaPlataforma();  // Desenha a plataforma
     desenhaParede();
+    desenhaArquibancadaDireita();
+    desenhaArquibancadaFrente();
     desenhaBola();  // Desenha a bola
     desenhaBoneco();  // Desenha o boneco
     colisaoBolaBoneco();
@@ -335,11 +411,14 @@ void display() {
     glutSwapBuffers();  // Troca os buffers
 }
 
+
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(1200, 900);
     glutCreateWindow("Trabalho - Computação Gráfica");
+
+    // Inicializa o SDL para tocar musica
 
     glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
     glutDisplayFunc(display);  // Função de exibição
@@ -348,5 +427,6 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(teclado);
     glutMainLoop();  // Inicia o loop principal do GLUT
 
+    // encerra o SDL
     return 0;
 }
