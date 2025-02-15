@@ -31,6 +31,11 @@ int backupUltimoMovimentoDireita = 0;
 int backupUltimoMovimentoCima = 0;
 int backupUltimoMovimentoBaixo = 0;
 
+float reboteEmX = 0.0f;
+float reboteEmZ = 0.0f;
+
+int reboteEmAndamento = 0;
+
 float angulo = -0.5f;  // Ângulo de rotação
 float raio = 5.0f;    // Distância da câmera até o objeto
 float cameraY = 2.0f; // Altura da câmera
@@ -214,18 +219,18 @@ void atualizaPosicao() {
 }
 
 void atualizaPosicaoZ(){
-    if(speedZ==0){
+    if(speedZ==0 && !reboteEmAndamento){
         backupUltimoMovimentoBaixo = 0;
         backupUltimoMovimentoCima = 0; 
     }
 
-    if(ultimoMovimentoBaixo || backupUltimoMovimentoBaixo){
+    if((ultimoMovimentoBaixo || backupUltimoMovimentoBaixo) && !reboteEmAndamento){
         backupUltimoMovimentoBaixo = 1;
         if(ballZ >= -6.0f && speedZ > 0){
             ballZ -= 0.09f;
             speedZ-=0.1f;
         }
-    }else if(ultimoMovimentoCima || backupUltimoMovimentoCima){
+    }else if((ultimoMovimentoCima || backupUltimoMovimentoCima) && !reboteEmAndamento){
         backupUltimoMovimentoCima = 1;
         if(ballZ <= 7.0f && speedZ > 0){
             ballZ += 0.09f;
@@ -236,18 +241,18 @@ void atualizaPosicaoZ(){
 }
 
 void atualizaPosicaoX(){
-    if(speedX==0){
+    if(speedX==0 && !reboteEmAndamento){
         backupUltimoMovimentoDireita = 0;
         backupUltimoMovimentoEsquerda = 0; 
     }
 
-    if(ultimoMovimentoEsquerda || backupUltimoMovimentoEsquerda){
+    if((ultimoMovimentoEsquerda || backupUltimoMovimentoEsquerda) && !reboteEmAndamento){
         backupUltimoMovimentoEsquerda = 1;
         if(ballX >= -5.0f && speedX > 0){
             ballX -= 0.09f;
             speedX-=0.1f;
         }
-    }else if(ultimoMovimentoDireita || backupUltimoMovimentoDireita){
+    }else if((ultimoMovimentoDireita || backupUltimoMovimentoDireita) && !reboteEmAndamento){
         backupUltimoMovimentoDireita = 1;
         if(ballX <= 5.0f && speedX > 0){ //o deslocamento final vai ser speedX*10*ballX
             ballX += 0.09f;
@@ -291,25 +296,56 @@ void colisaoBolaParede(){
     // Verifica se a bola colidiu com as paredes
     if (paredeTras - ballZ >= raioBola) {
         printf("bateu\n");
+        reboteEmZ = speedZ;
         ultimoMovimento(0);//corta o efeito do toque na bola
         ballZ += 0.5f;
     }else if(paredeFrente-ballZ<=raioBola){
         printf("bateu\n");
+        reboteEmZ = speedZ;
         ultimoMovimento(0);
         ballZ-= 0.5f;
     }else if(paredeEsquerda-ballX>=raioBola){
         printf("bateu\n");
+        reboteEmX = speedX;
         ultimoMovimento(0);
         ballX+=0.5f;
     }else if(paredeDireita-ballX<=raioBola){
         printf("bateu\n");
+        reboteEmX = speedX;
         ultimoMovimento(0);
         ballX-=0.5f;
     }
     glutPostRedisplay();
 }
 // ======================================================================
+void rebote(){
+    if(reboteEmX > 0.1 ){
+        printf("rebote: %.2f\n", reboteEmX);
+        if(backupUltimoMovimentoDireita){
+            ballX -= 0.05f;
+            reboteEmX -= 0.1f;
+        }else if(backupUltimoMovimentoEsquerda){
+            ballX += 0.05f;
+            reboteEmX -= 0.1f;
+        }
+    }else if(reboteEmZ > 0.1){
+        printf("rebote: %.2f\n", reboteEmZ);
+        if(backupUltimoMovimentoCima){
+            ballZ -= 0.05f;
+            reboteEmZ -= 0.1f;
+        }else if(backupUltimoMovimentoBaixo){
+            ballZ += 0.05f;
+            reboteEmZ -= 0.1f;
+        }
 
+    }
+    if(reboteEmX > 0.1 || reboteEmZ > 0.1){
+        reboteEmAndamento = 1;
+    }else{
+        reboteEmAndamento = 0;
+    }
+    glutPostRedisplay();
+}
 // Função timer para atualizar a posição da bola
 void timer(int) {
     atualizaPosicao();
@@ -475,6 +511,8 @@ void display() {
     renderText(10, 10, texto);
     renderText(10, 8, texto2); 
     renderText(10, 6, texto3);
+
+    rebote();    
 
     colisaoBolaBoneco();
     // =====================================
