@@ -1,4 +1,5 @@
 #include <GL/glut.h>
+#include <stdio.h>
 #include <math.h>
 
 float ballY = 2.0f;
@@ -8,6 +9,8 @@ float bonecoX = 0.0f;
 float bonecoY = 2.0f;
 float bonecoZ = 1.0f;
 float speedY = 0.0f;
+float speedZ = 0.0f;
+float speedX = 0.0f;
 float cameraPosX = -2.0f;
 float cameraPosY = 2.0f;
 float cameraPosZ = 1.0f;
@@ -90,8 +93,8 @@ void desenhaBoneco() {
 // Função para desenhar a plataforma
 void desenhaPlataforma() {
     glPushMatrix();
-    glTranslatef(0.0f, -2.0f, -1.0f);
-    glScalef(10.0f, 1.0f, 10.0f);  // Aumenta o tamanho da plataforma
+    glTranslatef(0.0f, -2.0f, 0.0f);
+    glScalef(10.0f, 1.0f, 13.0f);  // Aumenta o tamanho da plataforma
     glutSolidCube(1.0);
     glPopMatrix();
 }
@@ -103,10 +106,17 @@ void desenhaParede(){
     glutSolidCube(1.0);
     glPopMatrix();
 
-    // muriho da frente
+    // murinho da frente
     glPushMatrix();
-    glTranslatef(0.0f, 0.0f, 4.0f);
+    glTranslatef(0.0f, 0.0f, 7.0f);
     glScalef(10.0f, 3.0f, 1.0f);
+    glutSolidCube(1.0);
+    glPopMatrix();
+    
+    // murinho da direita
+    glPushMatrix();
+    glTranslatef(5.0f, 0.0f, 0.5f);
+    glScalef(1.0f, 3.0f, 14.0f);
     glutSolidCube(1.0);
     glPopMatrix();
 }
@@ -128,6 +138,37 @@ void atualizaPosicao() {
     glutPostRedisplay();
 }
 
+void atualizaPosicaoZ(){
+    if(ultimoMovimentoBaixo){
+        if(ballZ >= -6.0f && speedZ > 0){
+            ballZ -= 0.09f;
+            speedZ-=0.1f;
+        }
+    }else if(ultimoMovimentoCima){
+        if(ballZ <= 7.0f && speedZ > 0){
+            ballZ += 0.09f;
+            speedZ-=0.1f;
+        }
+    }
+    glutPostRedisplay();
+}
+
+void atualizaPosicaoX(){
+    if(ultimoMovimentoEsquerda){
+        if(ballX >= -5.0f && speedX > 0){
+            ballX -= 0.09f;
+            speedX-=0.1f;
+        }
+    }else if(ultimoMovimentoDireita){
+        if(ballX <= 5.0f && speedX > 0){
+            ballX += 0.09f;
+            speedX-=0.1f;
+        }
+    }
+    glutPostRedisplay();
+}
+// ======================================================================
+// ======================== Funções de colisão =========================
 void colisaoBolaBoneco(){
     float dx = ballX - bonecoX;  // Diferença no eixo X
     float dz = ballZ - bonecoZ; // Diferença no eixo Z
@@ -138,14 +179,39 @@ void colisaoBolaBoneco(){
 
     if (distancia < (raioBoneco + raioBola)){
         if(ultimoMovimentoDireita == 1){
-            ballX+=0.1f;
+            speedX = 2.0f;
         }else if(ultimoMovimentoEsquerda == 1){
-            ballX-=0.1f;
+            speedX = 2.0f;
         }else if(ultimoMovimentoCima == 1){
-            ballZ+=0.1f;
+            speedZ = 2.0f;
         }else if(ultimoMovimentoBaixo == 1){
-            ballZ-=0.1f;
+            speedZ=3.0f;
         }
+    }
+    
+    glutPostRedisplay();
+}
+
+void colisaoBolaParede(){
+    float paredeTras = -4.0f;
+    float paredeFrente = 7.0f;
+    float paredeEsquerda = -4.0f;
+    float paredeDireita = 5.0f;
+    float raioBola = 1.0f;
+    
+    // Verifica se a bola colidiu com a parede no eixo X
+    if (paredeTras - ballZ >= raioBola) {
+        printf("bateu\n");
+        ballZ += 0.5f;
+    }else if(paredeFrente-ballZ<=raioBola){
+        printf("bateu\n");
+        ballZ-= 0.5f;
+    }else if(paredeEsquerda-ballX>=raioBola){
+        printf("bateu\n");
+        ballX+=0.5f;
+    }else if(paredeDireita-ballX<=raioBola){
+        printf("bateu\n");
+        ballX-=0.5f;
     }
     glutPostRedisplay();
 }
@@ -233,7 +299,12 @@ void teclado(unsigned char key, int x, int y) {
     }
     glutPostRedisplay();
 }
-
+void renderText(float x, float y, char *string) {
+    glRasterPos2f(x, y); // Define a posição do texto
+    for (char *c = string; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+    }
+}
 // Função para exibir a cena
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // Limpa a tela
@@ -250,6 +321,17 @@ void display() {
     desenhaBola();  // Desenha a bola
     desenhaBoneco();  // Desenha o boneco
     colisaoBolaBoneco();
+    atualizaPosicaoZ();
+    atualizaPosicaoX();
+    colisaoBolaParede();
+
+    char texto[50];
+    char texto2[50];
+    sprintf(texto, "ballZ: %.2f", ballZ);
+    sprintf(texto2, "ballX: %.2f", ballX);
+    glColor3f(1.0, 1.0, 1.0); // Define a cor do texto (branco)
+    renderText(-0.9, 0.9, texto); // Posição no canto superior esquerdo
+    renderText(-0.9, 0.3, texto2); // Posição no canto superior esquerdo
     glutSwapBuffers();  // Troca os buffers
 }
 
