@@ -26,12 +26,23 @@ int ultimoMovimentoDireita = 0;
 int ultimoMovimentoCima = 0;
 int ultimoMovimentoBaixo = 0;
 
-float angulo = 0.0f;  // Ângulo de rotação
+int backupUltimoMovimentoEsquerda = 0;
+int backupUltimoMovimentoDireita = 0;
+int backupUltimoMovimentoCima = 0;
+int backupUltimoMovimentoBaixo = 0;
+
+float reboteEmX = 0.0f;
+float reboteEmZ = 0.0f;
+
+int reboteEmAndamento = 0;
+
+float angulo = -0.5f;  // Ângulo de rotação
 float raio = 5.0f;    // Distância da câmera até o objeto
-float cameraY = 1.0f; // Altura da câmera
+float cameraY = 2.0f; // Altura da câmera
 
 // ======================== Protótipos de funções ========================
 void ultimoMovimento(int opcao);
+void configurarIluminacaoCampo();
 
 // ======================== Funções de desenho ========================
 // Função para desenhar a bola
@@ -106,9 +117,15 @@ void desenhaBoneco() {
 // Função para desenhar a plataforma
 void desenhaPlataforma() {
     glPushMatrix();
+
+    configurarIluminacaoCampo();  // Configuração da iluminação do campo
+    glDisable(GL_LIGHTING);  // Desativa a iluminação para a plataforma
+    
+    glColor3f(0.0f, 0.5f, 0.1f);
     glTranslatef(0.0f, -2.0f, 0.0f);
     glScalef(10.0f, 1.0f, 13.0f);  // Aumenta o tamanho da plataforma
     glutSolidCube(1.0);
+    glEnable(GL_LIGHTING);  // Ativa a iluminação novamente
     glPopMatrix();
 }
 
@@ -122,9 +139,12 @@ void desenhaParede(){
 
 void desenhaArquibancadaDireita(){
     glPushMatrix(); //primeiro degrau
+    glDisable(GL_LIGHTING);
+    glColor3f(0.1f, 0.1f, 0.1f);
     glTranslatef(5.0f, -1.0f, 0.5f);
     glScalef(1.0f, 1.0f, 14.0f);
     glutSolidCube(1.0);
+    glEnable(GL_LIGHTING);
     glPopMatrix();
 
     glPushMatrix(); //segundo degrau
@@ -134,18 +154,15 @@ void desenhaArquibancadaDireita(){
     glPopMatrix();
 
     glPushMatrix(); //terceiro degrau
+    glDisable(GL_LIGHTING);
+    glColor3f(0.1f, 0.1f, 0.1f);
     glTranslatef(7.0f, 1.0f, 1.5f);
     glScalef(1.0f, 1.0f, 16.0f);
     glutSolidCube(1.0);
-    glPopMatrix();
-
-    glPushMatrix(); //quarto degrau
-    glTranslatef(7.0f, 1.0f, 1.5f);
-    glScalef(1.0f, 1.0f, 16.0f);
-    glutSolidCube(1.0);
+    glEnable(GL_LIGHTING);
     glPopMatrix();
     
-    glPushMatrix(); //quinto degrau
+    glPushMatrix(); //quarto degrau
     glTranslatef(8.0f, 2.0f, 1.5f);
     glScalef(1.0f, 1.0f, 16.0f);
     glutSolidCube(1.0);
@@ -154,9 +171,12 @@ void desenhaArquibancadaDireita(){
 
 void desenhaArquibancadaFrente(){
     glPushMatrix(); //primeiro degrau
+    glDisable(GL_LIGHTING);
+    glColor3f(0.1f, 0.1f, 0.1f);
     glTranslatef(0.5f, -1.0f, 7.0f);
     glScalef(11.0f, 1.0f, 1.0f);
     glutSolidCube(1.0);
+    glEnable(GL_LIGHTING);
     glPopMatrix();
     
     glPushMatrix(); //segundo degrau
@@ -166,9 +186,12 @@ void desenhaArquibancadaFrente(){
     glPopMatrix();
 
     glPushMatrix(); //terceiro degrau
+    glDisable(GL_LIGHTING);
+    glColor3f(0.1f, 0.1f, 0.1f);
     glTranslatef(1.75f, 1.0f, 9.0f);
     glScalef(13.5f, 1.0f, 1.0f);
     glutSolidCube(1.0);
+    glEnable(GL_LIGHTING);
     glPopMatrix();
 
     glPushMatrix(); //quarto degrau
@@ -196,12 +219,12 @@ void atualizaPosicao() {
 }
 
 void atualizaPosicaoZ(){
-    if(ultimoMovimentoBaixo){
+    if(ultimoMovimentoBaixo && !backupUltimoMovimentoBaixo && !backupUltimoMovimentoCima){
         if(ballZ >= -6.0f && speedZ > 0){
             ballZ -= 0.09f;
             speedZ-=0.1f;
         }
-    }else if(ultimoMovimentoCima){
+    }else if(ultimoMovimentoCima && !backupUltimoMovimentoCima && !backupUltimoMovimentoBaixo){
         if(ballZ <= 7.0f && speedZ > 0){
             ballZ += 0.09f;
             speedZ-=0.1f;
@@ -211,12 +234,15 @@ void atualizaPosicaoZ(){
 }
 
 void atualizaPosicaoX(){
-    if(ultimoMovimentoEsquerda){
+    
+    if(ultimoMovimentoEsquerda && !backupUltimoMovimentoEsquerda && !backupUltimoMovimentoDireita && !backupUltimoMovimentoCima && !backupUltimoMovimentoBaixo && !reboteEmAndamento){
+        printf("\nparouuu");
         if(ballX >= -5.0f && speedX > 0){
             ballX -= 0.09f;
             speedX-=0.1f;
         }
-    }else if(ultimoMovimentoDireita){
+    }else if(ultimoMovimentoDireita && !backupUltimoMovimentoDireita && !backupUltimoMovimentoEsquerda && !backupUltimoMovimentoCima && !backupUltimoMovimentoBaixo && !reboteEmAndamento){
+        printf("\nparouuu1111111111111");
         if(ballX <= 5.0f && speedX > 0){ //o deslocamento final vai ser speedX*10*ballX
             ballX += 0.09f;
             speedX-=0.1f;
@@ -233,8 +259,9 @@ void colisaoBolaBoneco(){
 
     float raioBoneco = 0.3f;
     float raioBola = 0.3f;
-
+    
     if (distancia < (raioBoneco + raioBola)){
+        printf("foi aqui %.2f ballZ %.2f bonecoZ\n", ballZ, bonecoZ);
         if(ultimoMovimentoDireita == 1){
             speedX = forca;
         }else if(ultimoMovimentoEsquerda == 1){
@@ -259,23 +286,63 @@ void colisaoBolaParede(){
     // Verifica se a bola colidiu com as paredes
     if (paredeTras - ballZ >= raioBola) {
         printf("bateu\n");
+        reboteEmZ = speedZ;
         ultimoMovimento(0);//corta o efeito do toque na bola
+        backupUltimoMovimentoCima = 1;
         ballZ += 0.5f;
     }else if(paredeFrente-ballZ<=raioBola){
         printf("bateu\n");
+        reboteEmZ = speedZ;
         ultimoMovimento(0);
+        backupUltimoMovimentoBaixo = 1;
         ballZ-= 0.5f;
     }else if(paredeEsquerda-ballX>=raioBola){
         printf("bateu\n");
+        reboteEmX = speedX;
+        backupUltimoMovimentoEsquerda = 1;
         ultimoMovimento(0);
         ballX+=0.5f;
     }else if(paredeDireita-ballX<=raioBola){
         printf("bateu\n");
+        backupUltimoMovimentoDireita = 1;
+        reboteEmX = speedX;
         ultimoMovimento(0);
         ballX-=0.5f;
     }
     glutPostRedisplay();
 }
+
+void rebote(){
+    if(reboteEmX > 0.1 ){
+        printf("rebote: %.2f\n", reboteEmX);
+        if(backupUltimoMovimentoDireita){
+            ballX -= 0.05f;
+            reboteEmX -= 0.2f;
+        }else if(backupUltimoMovimentoEsquerda){
+            ballX += 0.05f;
+            reboteEmX -= 0.2f;
+        }
+    }else if(reboteEmZ > 0.1){
+        printf("rebote: %.2f\n", reboteEmZ);
+        if(backupUltimoMovimentoCima){
+            ballZ -= 0.05f;
+            reboteEmZ -= 0.2f;
+        }else if(backupUltimoMovimentoBaixo){
+            ballZ += 0.05f;
+            reboteEmZ -= 0.2f;
+        }
+
+    }else{
+        backupUltimoMovimentoDireita = 0;
+        backupUltimoMovimentoEsquerda = 0;
+        backupUltimoMovimentoCima = 0;
+        backupUltimoMovimentoBaixo = 0;
+        reboteEmAndamento = 0;
+    }
+    reboteEmAndamento = 1;
+    glutPostRedisplay();
+}
+// ======================================================================
 
 // Função timer para atualizar a posição da bola
 void timer(int) {
@@ -285,7 +352,7 @@ void timer(int) {
 
 // Configuração da iluminação
 void configurarIluminacao() {
-    GLfloat luzAmbiente[] = { 0.3f, 0.3f, 0.3f, 1.0f };  // Luz ambiente
+    GLfloat luzAmbiente[] = { 1.0f, 1.0f, 1.0f, 1.0f };  // Luz ambiente
     GLfloat luzDifusa[] = { 1.0f, 1.0f, 1.0f, 1.0f };  // Luz difusa
     GLfloat luzPosicao[] = { 0.0f, 10.0f, 0.0f, 1.0f };  // Posição da luz
 
@@ -295,6 +362,19 @@ void configurarIluminacao() {
     
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
+}
+
+void configurarIluminacaoCampo() {
+    GLfloat luzAmbiente[] = { 0.0f, 1.0f, 0.0f, 1.0f };  // Luz ambiente
+    GLfloat luzDifusa[] = { 1.0f, 1.0f, 1.0f, 1.0f };  // Luz difusa
+    GLfloat luzPosicao[] = { 0.0f, 10.0f, 0.0f, 1.0f };  // Posição da luz
+
+    glLightfv(GL_LIGHT1, GL_AMBIENT, luzAmbiente);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, luzDifusa);
+    glLightfv(GL_LIGHT1, GL_POSITION, luzPosicao);
+    
+    glEnable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
 }
 
@@ -364,8 +444,22 @@ void teclado(unsigned char key, int x, int y) {
         case 's': cameraY -= 0.5f; break; // Desce
         case 'q': raio -= 0.5f; break;    // Aproxima a câmera
         case 'e': raio += 0.5f; break;    // Afasta a câmera
-        case '+': forca += 0.5f; printf("Força: %.2f\n", forca); break;   // Aumenta a força
-        case '-': forca -= 0.5f; printf("Força: %.2f\n", forca); break;   // Diminui a força
+        case '+':
+            if(forca<14.0f){ 
+                forca += 0.5f; 
+                printf("Força: %.2f\n", forca);
+            }else{
+                printf("Força maxima atingida\n");
+            }
+            break;   // Aumenta a força
+        case '-':
+            if(forca > 2.0f){
+                forca -= 0.5f; 
+                printf("Força: %.2f\n", forca);
+            }else{
+                printf("Força minima atingida\n");
+            }
+            break;   // Diminui a força
         case 27: exit(0); // Tecla ESC fecha o programa
     }
     glutPostRedisplay();
@@ -388,6 +482,7 @@ void display() {
     gluLookAt(cameraX, cameraY, cameraZ,  // Posição da câmera
               0.0f, 0.0f, 0.0f,  // Olha para o centro
               0.0f, 1.0f, 0.0f);
+    glViewport(0, 0, 1200, 900);  // Define a janela de visualização
     configurarCamera();  // Configuração da câmera
     configurarIluminacao();  // Configuração da iluminação
     desenhaPlataforma();  // Desenha a plataforma
@@ -396,18 +491,32 @@ void display() {
     desenhaArquibancadaFrente();
     desenhaBola();  // Desenha a bola
     desenhaBoneco();  // Desenha o boneco
-    colisaoBolaBoneco();
+    
+    
     atualizaPosicaoZ();
     atualizaPosicaoX();
+
+    rebote();
+    
     colisaoBolaParede();
 
+    // ========= Exibição de Textos =========
     char texto[50];
     char texto2[50];
+    char texto3[50];
     sprintf(texto, "ballZ: %.2f", ballZ);
     sprintf(texto2, "ballX: %.2f", ballX);
-    glColor3f(1.0, 1.0, 1.0); // Define a cor do texto (branco)
-    renderText(-0.9, 0.9, texto); // Posição no canto superior esquerdo
-    renderText(-0.9, 0.3, texto2); // Posição no canto superior esquerdo
+    sprintf(texto3, "Forca: %.2f", forca);
+    glColor3f(1.0, 1.0, 1.0);
+    renderText(10, 10, texto);
+    renderText(10, 8, texto2); 
+    renderText(10, 6, texto3);
+
+    colisaoBolaBoneco();
+    // =====================================
+
+    glFrustum(-1.0, 1.0, -1.0, 1.0, 1.0, 100.0); 
+
     glutSwapBuffers();  // Troca os buffers
 }
 
