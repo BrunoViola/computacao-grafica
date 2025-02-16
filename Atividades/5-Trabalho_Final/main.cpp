@@ -48,6 +48,85 @@ GLuint texturaID;
 // ======================== Protótipos de funções ========================
 void ultimoMovimento(int opcao);
 
+
+GLuint texturaCampo;
+GLuint texturaPatrocionios;
+GLuint texturaPatrocioniosDireita;
+GLuint texturaCamisa;
+GLuint texturaCamisaVerso;
+
+void carregarTextura() {
+    int largura, altura, canais;
+    int larguraPatrocinios, alturaPatrocinios, canaisPatrocinios;
+    int larguraPatrociniosDireita, alturaPatrociniosDireita, canaisPatrociniosDireita;
+    int larguraCamisa, alturaCamisa, canaisCamisa;
+    int larguraCamisaVerso, alturaCamisaVerso, canaisCamisaVerso;
+
+    unsigned char* imagem = stbi_load("campo.jpg", &largura, &altura, &canais, 0);
+    if (imagem == NULL ) {
+        printf("Erro ao carregar a textura da plataforma\n");
+        return;
+    }
+
+    unsigned char* imagemPatrocinios = stbi_load("patrocinadorEsquerda.jpg", &larguraPatrocinios, &alturaPatrocinios, &canaisPatrocinios, 0);
+    if (imagemPatrocinios == NULL ) {
+        printf("Erro ao carregar a textura do patrocinador da Esquerda\n");
+        return;
+    }
+
+    unsigned char* imagemPatrociniosDireita = stbi_load("patrocinadorDireita.jpg", &larguraPatrociniosDireita, &alturaPatrociniosDireita, &canaisPatrociniosDireita, STBI_rgb);
+    if (imagemPatrocinios == NULL ) {
+        printf("Erro ao carregar a textura do patrocinador da Direita\n");
+        return;
+    }
+    
+    unsigned char* imagemCamisa = stbi_load("camisa.jpg", &larguraCamisa, &alturaCamisa, &canaisCamisa, STBI_rgb);
+    if (imagemCamisa == NULL ) {
+        printf("Erro ao carregar a textura da camisa\n");
+        return;
+    }
+
+    unsigned char* imagemCamisaVerso = stbi_load("camisaVerso.jpg", &larguraCamisaVerso, &alturaCamisaVerso, &canaisCamisaVerso, STBI_rgb);
+    if (imagemCamisaVerso == NULL ) {
+        printf("Erro ao carregar a textura da camisaVerso\n");
+        return;
+    }
+
+    glGenTextures(1, &texturaCampo);
+    glBindTexture(GL_TEXTURE_2D, texturaCampo);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, largura, altura, 0, GL_RGB, GL_UNSIGNED_BYTE, imagem);
+    
+    glGenTextures(1, &texturaPatrocionios);
+    glBindTexture(GL_TEXTURE_2D, texturaPatrocionios);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraPatrocinios, alturaPatrocinios, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemPatrocinios);
+
+    glGenTextures(1, &texturaPatrocioniosDireita);
+    glBindTexture(GL_TEXTURE_2D, texturaPatrocioniosDireita);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraPatrociniosDireita, alturaPatrociniosDireita, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemPatrociniosDireita);
+
+    glGenTextures(1, &texturaCamisa);
+    glBindTexture(GL_TEXTURE_2D, texturaCamisa);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraCamisa, alturaCamisa, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemCamisa);
+
+    glGenTextures(1, &texturaCamisaVerso);
+    glBindTexture(GL_TEXTURE_2D, texturaCamisaVerso);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_image_free(imagem);
+    stbi_image_free(imagemPatrocinios);
+    stbi_image_free(imagemPatrociniosDireita);
+    stbi_image_free(imagemCamisa);
+}
+
 // ======================= Funções de desenho do personagem =======================
 void desenhaCabeca() {
     glPushMatrix();
@@ -62,6 +141,18 @@ void desenhaTronco() {
     glScalef(0.8f, 1.0f, 0.5f);  //escala para criar o tronco
     glutSolidCube(1.0);  //tronco em forma de cubo
     glPopMatrix();
+
+    glEnable(GL_TEXTURE_2D); // Ativa o uso de texturas
+    glBindTexture(GL_TEXTURE_2D, texturaCamisa); // Aplica a textura carregada
+
+    glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.4f, 0.3f, -0.5f); // Inferior esquerdo
+        glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.4f, 0.3f, -0.5f); // Inferior direito
+        glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.4f, 1.3f, -0.5f); // Superior direito
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.4f, 1.3f, -0.5f); // Superior esquerdo
+    glEnd();
+
+    glDisable(GL_TEXTURE_2D);
 }
 
 void desenhaBracos() {
@@ -107,56 +198,7 @@ void desenhaBoneco() {
 }
 // ======================================================================
 
-GLuint texturaCampo;
-GLuint texturaPatrocionios;
-GLuint texturaPatrocioniosDireita;
 
-void carregarTextura() {
-    int largura, altura, canais;
-    int larguraPatrocinios, alturaPatrocinios, canaisPatrocinios;
-    int larguraPatrociniosDireita, alturaPatrociniosDireita, canaisPatrociniosDireita;
-
-    unsigned char* imagem = stbi_load("campo.jpg", &largura, &altura, &canais, 0);
-    if (imagem == NULL ) {
-        printf("Erro ao carregar a textura da plataforma\n");
-        return;
-    }
-
-    unsigned char* imagemPatrocinios = stbi_load("patrocinadorEsquerda.jpg", &larguraPatrocinios, &alturaPatrocinios, &canaisPatrocinios, 0);
-    if (imagemPatrocinios == NULL ) {
-        printf("Erro ao carregar a textura do patrocinador da Esquerda\n");
-        return;
-    }
-
-    unsigned char* imagemPatrociniosDireita = stbi_load("patrocinadorDireita.jpg", &larguraPatrociniosDireita, &alturaPatrociniosDireita, &canaisPatrociniosDireita, STBI_rgb);
-    if (imagemPatrocinios == NULL ) {
-        printf("Erro ao carregar a textura do patrocinador da Direita\n");
-        return;
-    }
-
-    glGenTextures(1, &texturaCampo);
-    glBindTexture(GL_TEXTURE_2D, texturaCampo);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, largura, altura, 0, GL_RGB, GL_UNSIGNED_BYTE, imagem);
-    
-
-    glGenTextures(1, &texturaPatrocionios);
-    glBindTexture(GL_TEXTURE_2D, texturaPatrocionios);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraPatrocinios, alturaPatrocinios, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemPatrocinios);
-
-    glGenTextures(1, &texturaPatrocioniosDireita);
-    glBindTexture(GL_TEXTURE_2D, texturaPatrocioniosDireita);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraPatrociniosDireita, alturaPatrociniosDireita, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemPatrociniosDireita);
-
-    stbi_image_free(imagem);
-    stbi_image_free(imagemPatrocinios);
-    stbi_image_free(imagemPatrociniosDireita);
-}
 
 // ======================== Funções de desenho ========================
 // Função para desenhar a bola
@@ -170,9 +212,8 @@ void desenhaBola() {
 void desenhaPlataforma() {
     glPushMatrix();
     
-    glEnable(GL_TEXTURE_2D); // Ativa o uso de texturas
-
-    glBindTexture(GL_TEXTURE_2D, texturaCampo); // Aplica a textura carregada
+    glEnable(GL_TEXTURE_2D); //ativa o uso de texturas
+    glBindTexture(GL_TEXTURE_2D, texturaCampo); //aplica a textura carregada
     
     // Definindo as coordenadas de textura para o mapeamento
     glBegin(GL_QUADS);
@@ -183,10 +224,10 @@ void desenhaPlataforma() {
         glTexCoord2f(0.0f, 1.0f); glVertex3f(-5.0f, -1.5f, 6.5f);   // Canto superior esquerdo
     glEnd();
     glTranslatef(0.0f, -2.05f, 0.0f);
-    glScalef(10.0f, 1.0f, 13.0f);  // Aumenta o tamanho da plataforma
+    glScalef(10.0f, 1.0f, 13.0f);  //aumenta o tamanho da plataforma
     glutSolidCube(1.0);
 
-    glDisable(GL_TEXTURE_2D); // Desativa o uso de texturas
+    glDisable(GL_TEXTURE_2D); //desativa o uso de textura
     
     glPopMatrix();
 }
@@ -549,19 +590,19 @@ void ultimoMovimento(int opcao){
 // ======================== Direcionais para control.personagem =========================
 void teclasEspeciais(int key, int x, int y) {
     if (key == GLUT_KEY_LEFT) {
-        if(bonecoX > -4.5f)
+        if(bonecoX > -4.5f) //esse if verifica a colisão do boneco com a parede
             bonecoX-=0.1f;  //para esquerda
         ultimoMovimento(1);
     } else if (key == GLUT_KEY_RIGHT) {
-        if(bonecoX < 4.0f)
+        if(bonecoX < 4.0f) //esse if verifica a colisão do boneco com a parede
             bonecoX+=0.1f; //para direita
         ultimoMovimento(2);
     } else if (key == GLUT_KEY_DOWN) {
-        if(bonecoZ < 6.0f)
+        if(bonecoZ < 6.0f) //mesma coisa dos dois if dos casos acima
             bonecoZ += 0.1f;  //para tras
         ultimoMovimento(3);
     } else if (key == GLUT_KEY_UP) {
-        if(bonecoZ > -5.0f)
+        if(bonecoZ > -5.0f) //mesma coisa dos dois if dos casos acima
             bonecoZ-=0.1f;  //para frente
         ultimoMovimento(4);
     }
