@@ -34,6 +34,7 @@ void desenhaArquibancadaFrente(){
    glPopMatrix();
 }
 
+// ======================================================================
 
 void desenhaArquibancadaDireita(){
    glPushMatrix(); //primeiro degrau

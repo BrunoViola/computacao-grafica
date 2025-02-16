@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "arquibancada.h"
+#include "texturas.h"
 
 float ballY = 2.0f;
 float ballX = 0.0f;
@@ -44,89 +45,9 @@ float angulo = -0.5f;  // Ângulo de rotação
 float raio = 5.0f;    // Distância da câmera até o objeto
 float cameraY = 2.0f; // Altura da câmera
 
-GLuint texturaID;
 
 // ======================== Protótipos de funções ========================
 void ultimoMovimento(int opcao);
-
-
-GLuint texturaCampo;
-GLuint texturaPatrocionios;
-GLuint texturaPatrocioniosDireita;
-GLuint texturaCamisa;
-GLuint texturaCamisaVerso;
-
-void carregarTextura() {
-    int largura, altura, canais;
-    int larguraPatrocinios, alturaPatrocinios, canaisPatrocinios;
-    int larguraPatrociniosDireita, alturaPatrociniosDireita, canaisPatrociniosDireita;
-    int larguraCamisa, alturaCamisa, canaisCamisa;
-    int larguraCamisaVerso, alturaCamisaVerso, canaisCamisaVerso;
-
-    unsigned char* imagem = stbi_load("campo.jpg", &largura, &altura, &canais, 0);
-    if (imagem == NULL ) {
-        printf("Erro ao carregar a textura da plataforma\n");
-        return;
-    }
-
-    unsigned char* imagemPatrocinios = stbi_load("patrocinadorEsquerda.jpg", &larguraPatrocinios, &alturaPatrocinios, &canaisPatrocinios, 0);
-    if (imagemPatrocinios == NULL ) {
-        printf("Erro ao carregar a textura do patrocinador da Esquerda\n");
-        return;
-    }
-
-    unsigned char* imagemPatrociniosDireita = stbi_load("patrocinadorDireita.jpg", &larguraPatrociniosDireita, &alturaPatrociniosDireita, &canaisPatrociniosDireita, STBI_rgb);
-    if (imagemPatrocinios == NULL ) {
-        printf("Erro ao carregar a textura do patrocinador da Direita\n");
-        return;
-    }
-    
-    unsigned char* imagemCamisa = stbi_load("camisa.jpg", &larguraCamisa, &alturaCamisa, &canaisCamisa, STBI_rgb);
-    if (imagemCamisa == NULL ) {
-        printf("Erro ao carregar a textura da camisa\n");
-        return;
-    }
-
-    unsigned char* imagemCamisaVerso = stbi_load("camisaVerso.jpg", &larguraCamisaVerso, &alturaCamisaVerso, &canaisCamisaVerso, STBI_rgb);
-    if (imagemCamisaVerso == NULL ) {
-        printf("Erro ao carregar a textura da camisaVerso\n");
-        return;
-    }
-
-    glGenTextures(1, &texturaCampo);
-    glBindTexture(GL_TEXTURE_2D, texturaCampo);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, largura, altura, 0, GL_RGB, GL_UNSIGNED_BYTE, imagem);
-    
-    glGenTextures(1, &texturaPatrocionios);
-    glBindTexture(GL_TEXTURE_2D, texturaPatrocionios);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraPatrocinios, alturaPatrocinios, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemPatrocinios);
-
-    glGenTextures(1, &texturaPatrocioniosDireita);
-    glBindTexture(GL_TEXTURE_2D, texturaPatrocioniosDireita);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraPatrociniosDireita, alturaPatrociniosDireita, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemPatrociniosDireita);
-
-    glGenTextures(1, &texturaCamisa);
-    glBindTexture(GL_TEXTURE_2D, texturaCamisa);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraCamisa, alturaCamisa, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemCamisa);
-
-    glGenTextures(1, &texturaCamisaVerso);
-    glBindTexture(GL_TEXTURE_2D, texturaCamisaVerso);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    stbi_image_free(imagem);
-    stbi_image_free(imagemPatrocinios);
-    stbi_image_free(imagemPatrociniosDireita);
-    stbi_image_free(imagemCamisa);
-}
 
 // ======================= Funções de desenho do personagem =======================
 void desenhaCabeca() {
@@ -145,12 +66,20 @@ void desenhaTronco() {
 
     glEnable(GL_TEXTURE_2D); // Ativa o uso de texturas
     glBindTexture(GL_TEXTURE_2D, texturaCamisa); // Aplica a textura carregada
-
     glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.4f, 0.3f, -0.5f); // Inferior esquerdo
-        glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.4f, 0.3f, -0.5f); // Inferior direito
-        glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.4f, 1.3f, -0.5f); // Superior direito
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.4f, 1.3f, -0.5f); // Superior esquerdo
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.4f, 0.3f, -0.26f); // Inferior esquerdo
+        glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.4f, 0.3f, -0.26f); // Inferior direito
+        glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.4f, 1.3f, -0.26f); // Superior direito
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.4f, 1.3f, -0.26f); // Superior esquerdo
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, texturaCamisaVerso);
+    glBegin(GL_QUADS);
+        glNormal3f(0.0f, 0.0f, 1.0f);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.4f, 0.3f, 0.26f); // Inferior esquerdo
+        glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.4f, 0.3f, 0.26f); // Inferior direito
+        glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.4f, 1.3f, 0.26f); // Superior direito
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.4f, 1.3f, 0.26f); // Superior esquerdo
     glEnd();
 
     glDisable(GL_TEXTURE_2D);
@@ -522,14 +451,14 @@ void ultimoMovimento(int opcao){
     }
 }
 
-// ======================== Direcionais para control.personagem =========================
+// ======================== Direcionais para controlar o personagem =========================
 void teclasEspeciais(int key, int x, int y) {
     if (key == GLUT_KEY_LEFT) {
-        if(bonecoX > -4.5f) //esse if verifica a colisão do boneco com a parede
+        if(bonecoX > -4.5f) //esse if verifica a colisao do boneco com a parede
             bonecoX-=0.1f;  //para esquerda
         ultimoMovimento(1);
     } else if (key == GLUT_KEY_RIGHT) {
-        if(bonecoX < 4.0f) //esse if verifica a colisão do boneco com a parede
+        if(bonecoX < 4.0f) //esse if verifica a colisao do boneco com a parede
             bonecoX+=0.1f; //para direita
         ultimoMovimento(2);
     } else if (key == GLUT_KEY_DOWN) {
@@ -541,7 +470,7 @@ void teclasEspeciais(int key, int x, int y) {
             bonecoZ-=0.1f;  //para frente
         ultimoMovimento(4);
     }
-    glutPostRedisplay();  // Atualiza a tela após o movimento
+    glutPostRedisplay();  // Atualiza a tela apos o movimento
 }
 
 void teclado(unsigned char key, int x, int y) {
