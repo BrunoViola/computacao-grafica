@@ -1,3 +1,5 @@
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 #include <GL/glut.h>
 #include <stdio.h>
 #include <math.h>
@@ -41,9 +43,10 @@ float angulo = -0.5f;  // Ângulo de rotação
 float raio = 5.0f;    // Distância da câmera até o objeto
 float cameraY = 2.0f; // Altura da câmera
 
+GLuint texturaID;
+
 // ======================== Protótipos de funções ========================
 void ultimoMovimento(int opcao);
-void configurarIluminacaoCampo();
 
 // ======================== Funções de desenho ========================
 // Função para desenhar a bola
@@ -115,47 +118,140 @@ void desenhaBoneco() {
     desenhaPernas();
     glPopMatrix();
 }
-// Função para desenhar a plataforma
+GLuint texturaCampo;
+GLuint texturaPatrocionios;
+GLuint texturaPatrocioniosDireita;
+
+void carregarTextura() {
+    int largura, altura, canais;
+    int larguraPatrocinios, alturaPatrocinios, canaisPatrocinios;
+    int larguraPatrociniosDireita, alturaPatrociniosDireita, canaisPatrociniosDireita;
+
+    unsigned char* imagem = stbi_load("campo.jpg", &largura, &altura, &canais, 0);
+    if (imagem == NULL ) {
+        printf("Erro ao carregar a textura da plataforma\n");
+        return;
+    }
+
+    unsigned char* imagemPatrocinios = stbi_load("patrocinadorEsquerda.jpg", &larguraPatrocinios, &alturaPatrocinios, &canaisPatrocinios, 0);
+    if (imagemPatrocinios == NULL ) {
+        printf("Erro ao carregar a textura do patrocinador da Esquerda\n");
+        return;
+    }
+
+    unsigned char* imagemPatrociniosDireita = stbi_load("patrocinadorDireita.jpg", &larguraPatrociniosDireita, &alturaPatrociniosDireita, &canaisPatrociniosDireita, STBI_rgb);
+    if (imagemPatrocinios == NULL ) {
+        printf("Erro ao carregar a textura do patrocinador da Direita\n");
+        return;
+    }
+
+    glGenTextures(1, &texturaCampo);
+    glBindTexture(GL_TEXTURE_2D, texturaCampo);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, largura, altura, 0, GL_RGB, GL_UNSIGNED_BYTE, imagem);
+    
+
+    glGenTextures(1, &texturaPatrocionios);
+    glBindTexture(GL_TEXTURE_2D, texturaPatrocionios);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraPatrocinios, alturaPatrocinios, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemPatrocinios);
+
+    glGenTextures(1, &texturaPatrocioniosDireita);
+    glBindTexture(GL_TEXTURE_2D, texturaPatrocioniosDireita);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraPatrociniosDireita, alturaPatrociniosDireita, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemPatrociniosDireita);
+
+    stbi_image_free(imagem);
+    stbi_image_free(imagemPatrocinios);
+    stbi_image_free(imagemPatrociniosDireita);
+}
+
 void desenhaPlataforma() {
     glPushMatrix();
-
-    configurarIluminacaoCampo();  // Configuração da iluminação do campo
-    glDisable(GL_LIGHTING);  // Desativa a iluminação para a plataforma
     
-    glColor3f(0.0f, 0.5f, 0.1f);
-    glTranslatef(0.0f, -2.0f, 0.0f);
+    glEnable(GL_TEXTURE_2D); // Ativa o uso de texturas
+
+    glBindTexture(GL_TEXTURE_2D, texturaCampo); // Aplica a textura carregada
+    
+    //glDisable(GL_LIGHTING);  // Desativa a iluminação para a plataforma
+
+    // Definindo as coordenadas de textura para o mapeamento
+    glBegin(GL_QUADS);
+        glNormal3f(0.0f, 1.0f, 0.0f);
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(-5.0f, -1.5f, -6.5f);  // Canto inferior esquerdo
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(5.0f, -1.5f, -6.5f);   // Canto inferior direito
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(5.0f, -1.5f, 6.5f);    // Canto superior direito
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(-5.0f, -1.5f, 6.5f);   // Canto superior esquerdo
+    glEnd();
+    glTranslatef(0.0f, -2.05f, 0.0f);
     glScalef(10.0f, 1.0f, 13.0f);  // Aumenta o tamanho da plataforma
     glutSolidCube(1.0);
-    glEnable(GL_LIGHTING);  // Ativa a iluminação novamente
+
+    //glEnable(GL_LIGHTING);  // Restaura a iluminação
+    glDisable(GL_TEXTURE_2D); // Desativa o uso de texturas
+    
     glPopMatrix();
 }
 
 void desenhaParedeGol(){
-    //barreira esquerda
-    glPushMatrix();
-    glTranslatef(-3.25f, -0.5f, -6.0f);
-    glScalef(3.5f, 2.0f, 1.0f);
-    glutSolidCube(1.0);
-    glPopMatrix();
+    // ================== barreira esquerda =====================
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texturaPatrocionios); 
+    //glDisable(GL_LIGHTING);
+    
+    // Desenha o plano texturizado na posição correta
+    glBegin(GL_QUADS);
+        glNormal3f(0.0f, 0.0f, 1.0f);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(-5.0, -1.5, -5.45);  // Canto inferior esquerdo
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.5, -1.5, -5.45);  // Canto inferior direito
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.5, 0.5, -5.45);   // Canto superior direito
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(-5.0, 0.5, -5.45);   // Canto superior esquerdo
+    glEnd();
 
-    // barreira direita
+    glDisable(GL_TEXTURE_2D);
+    //glEnable(GL_LIGHTING);
+
+    glPushMatrix();
+        glTranslatef(-3.25f, -0.5f, -6.0f);
+        glScalef(3.5f, 2.0f, 1.0f);
+        glutSolidCube(1.0);
+    glPopMatrix();
+    // ===================================
+
+    // =============== barreira direita ===============
     glPushMatrix();
     glTranslatef(3.25f, -0.5f, -6.0f);
     glScalef(3.5f, 2.0f, 1.0f);
     glutSolidCube(1.0);
     glPopMatrix();
 
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texturaPatrocioniosDireita); 
+    //glDisable(GL_LIGHTING);
+    glBegin(GL_QUADS);
+        glNormal3f(0.0f, 0.0f, 1.0f);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(5.0, -1.5, -5.45);  // Canto inferior esquerdo
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(1.5, -1.5, -5.45);  // Canto inferior direito
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(1.5, 0.5, -5.45);   // Canto superior direito
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(5.0, 0.5, -5.45);   // Canto superior esquerdo
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+    //glEnable(GL_LIGHTING);
+    // ===================================
     // trave direita
     glPushMatrix();
-    glTranslatef(1.75f, 1.0f, -6.0f);
-    glScalef(0.5f, 2.5f, 1.0f);
+    glTranslatef(1.75f, 1.4f, -6.0f);
+    glScalef(0.5f, 1.8f, 1.0f);
     glutSolidCube(1.0);
     glPopMatrix();
 
     // trave esquerda
     glPushMatrix();
-    glTranslatef(-1.75f, 1.0f, -6.0f);
-    glScalef(0.5f, 2.5f, 1.0f);
+    glTranslatef(-1.75f, 1.4f, -6.0f);
+    glScalef(0.5f, 1.8f, 1.0f);
     glutSolidCube(1.0);
     glPopMatrix();
 
@@ -251,8 +347,8 @@ void atualizaPosicaoBonecoY() {
     bonecoY += speedYBoneco;
 
     // Verifica se o boneco tocou a plataforma
-    if (bonecoY <= -0.5f) {
-        bonecoY = -0.5f;
+    if (bonecoY <= -0.25f) {
+        bonecoY = -0.25f;
         speedYBoneco = -speedYBoneco * 0.8f;  // Faz a bola quicar com um fator de amortecimento
     }
 
@@ -400,14 +496,14 @@ void rebote(){
 void timer(int) {
     atualizaPosicaoBolaY();
     atualizaPosicaoBonecoY();
-    glutTimerFunc(16, timer, 0);  // Atualiza a cada 16 ms (aproximadamente 60 FPS)
+    glutTimerFunc(16, timer, 0);  // Atualiza a cada 16 ms
 }
 
 // Configuração da iluminação
 void configurarIluminacao() {
-    GLfloat luzAmbiente[] = { 1.0f, 1.0f, 1.0f, 1.0f };  // Luz ambiente
-    GLfloat luzDifusa[] = { 1.0f, 1.0f, 1.0f, 1.0f };  // Luz difusa
-    GLfloat luzPosicao[] = { 0.0f, 10.0f, 0.0f, 1.0f };  // Posição da luz
+    GLfloat luzAmbiente[] = { 1.0f, 1.0f, 1.0f, 1.0f };  // (R, G, B, OPACIDADE), coloquei branca
+    GLfloat luzDifusa[] = {  1.0f, 1.0f, 1.0f, 1.0f };  // (R, G, B, OPACIDADE), coloquei branca
+    GLfloat luzPosicao[] = { -4.0f, 10.0f, 6.0f, 1.0f };  // (X, Y, Z, TIPO)
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa);
@@ -415,19 +511,6 @@ void configurarIluminacao() {
     
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-    glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
-}
-
-void configurarIluminacaoCampo() {
-    GLfloat luzAmbiente[] = { 0.0f, 1.0f, 0.0f, 1.0f };  // Luz ambiente
-    GLfloat luzDifusa[] = { 1.0f, 1.0f, 1.0f, 1.0f };  // Luz difusa
-    GLfloat luzPosicao[] = { 0.0f, 10.0f, 0.0f, 1.0f };  // Posição da luz
-
-    glLightfv(GL_LIGHT1, GL_AMBIENT, luzAmbiente);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, luzDifusa);
-    glLightfv(GL_LIGHT1, GL_POSITION, luzPosicao);
-    
-    glEnable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
 }
 
@@ -576,7 +659,6 @@ void display() {
     glutSwapBuffers();  // Troca os buffers
 }
 
-
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -584,8 +666,15 @@ int main(int argc, char** argv) {
     glutCreateWindow("Trabalho - Computação Gráfica");
 
     // Inicializa o SDL para tocar musica
-
+    
     glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
+    glEnable(GL_TEXTURE_2D);  // Ativa o uso de texturas 2D
+
+    carregarTextura();
+    // Configuração de projeção e visualização
+    glMatrixMode(GL_PROJECTION);
+    gluPerspective(45.0f, 1.33f, 0.1f, 100.0f);
+    glMatrixMode(GL_MODELVIEW);
     glutDisplayFunc(display);  // Função de exibição
     glutTimerFunc(16, timer, 0);  // Inicia o timer para atualizar a posição da bola
     glutSpecialFunc(teclasEspeciais);  // Função para capturar teclas especiais
