@@ -130,12 +130,41 @@ void desenhaPlataforma() {
     glPopMatrix();
 }
 
-void desenhaParede(){
+void desenhaParedeGol(){
+    //barreira esquerda
     glPushMatrix();
-    glTranslatef(0.0f, 2.0f, -6.0f);
-    glScalef(10.0f, 7.0f, 1.0f);
+    glTranslatef(-3.25f, -0.5f, -6.0f);
+    glScalef(3.5f, 2.0f, 1.0f);
     glutSolidCube(1.0);
-    glPopMatrix(); 
+    glPopMatrix();
+
+    // barreira direita
+    glPushMatrix();
+    glTranslatef(3.25f, -0.5f, -6.0f);
+    glScalef(3.5f, 2.0f, 1.0f);
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    // trave direita
+    glPushMatrix();
+    glTranslatef(1.75f, 1.0f, -6.0f);
+    glScalef(0.5f, 2.5f, 1.0f);
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    // trave esquerda
+    glPushMatrix();
+    glTranslatef(-1.75f, 1.0f, -6.0f);
+    glScalef(0.5f, 2.5f, 1.0f);
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    // travessao
+    glPushMatrix();
+    glTranslatef(0.0f, 2.5f, -6.0f);
+    glScalef(4.0f, 0.5f, 1.0f);
+    glutSolidCube(1.0);
+    glPopMatrix();
 }
 
 void desenhaArquibancadaDireita(){
@@ -222,8 +251,8 @@ void atualizaPosicaoBonecoY() {
     bonecoY += speedYBoneco;
 
     // Verifica se o boneco tocou a plataforma
-    if (bonecoY <= 0.0f) {
-        bonecoY = 0.0f;
+    if (bonecoY <= -0.5f) {
+        bonecoY = -0.5f;
         speedYBoneco = -speedYBoneco * 0.8f;  // Faz a bola quicar com um fator de amortecimento
     }
 
@@ -238,7 +267,7 @@ void atualizaPosicaoZ(){
 
     if((ultimoMovimentoBaixo || backupUltimoMovimentoBaixo) && !reboteEmAndamento){
         backupUltimoMovimentoBaixo = 1;
-        if(ballZ >= -6.0f && speedZ > 0){
+        if(ballZ >= -7.0f && speedZ > 0){
             ballZ -= 0.09f;
             speedZ-=0.1f;
         }
@@ -307,10 +336,19 @@ void colisaoBolaParede(){
     
     // Verifica se a bola colidiu com as paredes
     if (paredeTras - ballZ >= raioBola) {
-        printf("bateu\n");
-        reboteEmZ = speedZ;
-        ultimoMovimento(0);//corta o efeito do toque na bola
-        ballZ += 0.5f;
+        if(ballX >= -1.75f && ballX <= 1.75f){
+            printf("GOOOOOOOOLLL\n");
+            ballX = 0.0f;
+            ballZ = 3.0f;
+            ballY = 2.0f;
+            speedX = 0.0f;
+            speedZ = 0.0f;
+
+        }else{
+            reboteEmZ = speedZ;
+            ultimoMovimento(0);//corta o efeito do toque na bola
+            ballZ += 0.5f;
+        }
     }else if(paredeFrente-ballZ<=raioBola){
         printf("bateu\n");
         reboteEmZ = speedZ;
@@ -504,7 +542,7 @@ void display() {
     configurarCamera();  // Configuração da câmera
     configurarIluminacao();  // Configuração da iluminação
     desenhaPlataforma();  // Desenha a plataforma
-    desenhaParede();
+    desenhaParedeGol();
     desenhaArquibancadaDireita();
     desenhaArquibancadaFrente();
     desenhaBola();  // Desenha a bola
