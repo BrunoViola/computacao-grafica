@@ -8,10 +8,10 @@
 #include "texturas.h"
 #include "personagem.h"
 #include "plataforma.h"
+#include "bolaParedeGol.h"
+#include "variaveisGlobais.h"
 
-float ballY = 2.0f;
-float ballX = 0.0f;
-float ballZ = 0.0f;
+int gols = 0; //quantidade de gols marcados
 
 float speedY = 0.0f;
 float speedYBoneco = 0.0f;
@@ -49,91 +49,16 @@ float cameraY = 2.0f; // Altura da câmera
 void ultimoMovimento(int opcao);
 // ======================================================================
 
-// ======================== Funções de desenho ========================
-// Função para desenhar a bola
-void desenhaBola() {
-    glPushMatrix();
-    glTranslatef(ballX, ballY, ballZ);
-    glutSolidSphere(0.5, 30, 30);
-    glPopMatrix();
-}
-
-
-
-void desenhaParedeGol(){
-    // ================== barreira esquerda =====================
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, texturaPatrocionios); 
-    
-    // Desenha o plano texturizado na posição correta
-    glBegin(GL_QUADS);
-        glNormal3f(0.0f, 0.0f, 1.0f);
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-5.0, -1.5, -5.45);  // Canto inferior esquerdo
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.5, -1.5, -5.45);  // Canto inferior direito
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.5, 0.5, -5.45);   // Canto superior direito
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-5.0, 0.5, -5.45);   // Canto superior esquerdo
-    glEnd();
-
-    glDisable(GL_TEXTURE_2D);
-
-    glPushMatrix();
-        glTranslatef(-3.25f, -0.5f, -6.0f);
-        glScalef(3.5f, 2.0f, 1.0f);
-        glutSolidCube(1.0);
-    glPopMatrix();
-    // ===================================
-
-    // =============== barreira direita ===============
-    glPushMatrix();
-    glTranslatef(3.25f, -0.5f, -6.0f);
-    glScalef(3.5f, 2.0f, 1.0f);
-    glutSolidCube(1.0);
-    glPopMatrix();
-
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, texturaPatrocioniosDireita); 
-    glBegin(GL_QUADS);
-        glNormal3f(0.0f, 0.0f, 1.0f);
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(5.0, -1.5, -5.45);  // Canto inferior esquerdo
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(1.5, -1.5, -5.45);  // Canto inferior direito
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(1.5, 0.5, -5.45);   // Canto superior direito
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(5.0, 0.5, -5.45);   // Canto superior esquerdo
-    glEnd();
-    glDisable(GL_TEXTURE_2D);
-    // ===================================
-    // trave direita
-    glPushMatrix();
-    glTranslatef(1.75f, 1.4f, -6.0f);
-    glScalef(0.5f, 1.8f, 1.0f);
-    glutSolidCube(1.0);
-    glPopMatrix();
-
-    // trave esquerda
-    glPushMatrix();
-    glTranslatef(-1.75f, 1.4f, -6.0f);
-    glScalef(0.5f, 1.8f, 1.0f);
-    glutSolidCube(1.0);
-    glPopMatrix();
-
-    // travessao
-    glPushMatrix();
-    glTranslatef(0.0f, 2.5f, -6.0f);
-    glScalef(4.0f, 0.5f, 1.0f);
-    glutSolidCube(1.0);
-    glPopMatrix();
-}
-// ======================================================================
-
-// ======================== Funções de movimento =======================
-// Atualiza a posicao da bola de acordo com a gravidade
+// ======================== Funcoes de movimento =======================
+//atualiza a posicao da bola de acordo com a gravidade
 void atualizaPosicaoBolaY() {
     speedY += gravity;
     ballY += speedY;
 
-    // Verifica se a bola tocou a plataforma
+    //verifica se a bola tocou a plataforma
     if (ballY <= -1.0f) {
         ballY = -1.0f;
-        speedY = -speedY * 0.8f;  // Faz a bola quicar com um fator de amortecimento
+        speedY = -speedY * 0.8f;  //faz a bola quicar com um fator de amortecimento
     }
 
     glutPostRedisplay();
@@ -143,10 +68,10 @@ void atualizaPosicaoBonecoY() {
     speedYBoneco += gravity;
     bonecoY += speedYBoneco;
 
-    // Verifica se o boneco tocou a plataforma
+    //verifica se o boneco tocou a plataforma
     if (bonecoY <= -0.25f) {
         bonecoY = -0.25f;
-        speedYBoneco = -speedYBoneco * 0.8f;  // Faz a bola quicar com um fator de amortecimento
+        speedYBoneco = -speedYBoneco * 0.8f;  //faz o personagem quicar com um fator de amortecimento
     }
 
     glutPostRedisplay();
@@ -195,8 +120,10 @@ void atualizaPosicaoX(){
     }
     glutPostRedisplay();
 }
-// ======================================================================
-// ======================== Funções de colisão =========================
+
+// =====================================================================
+
+// ======================== Funcoes de colisao =========================
 void colisaoBolaBoneco(){
     float dx = ballX - bonecoX;  //diferenca no eixo X
     float dz = ballZ - bonecoZ; //diferenca no eixo Z
@@ -231,6 +158,7 @@ void colisaoBolaParede(){
     if (paredeTras - ballZ >= raioBola) {
         if(ballX >= -1.75f && ballX <= 1.75f){
             printf("GOOOOOOOOLLL\n");
+            gols++;
             ballX = 0.0f;
             ballZ = 3.0f;
             ballY = 2.0f;
@@ -260,12 +188,11 @@ void colisaoBolaParede(){
     }
     glutPostRedisplay();
 }
-
 // ======================================================================
 
 void rebote(){
     if(reboteEmX > 0.1 ){
-        printf("rebote: %.2f\n", reboteEmX);
+        //printf("rebote: %.2f\n", reboteEmX);
         if(backupUltimoMovimentoDireita){
             ballX -= 0.05f;
             reboteEmX -= 0.1f;
@@ -274,7 +201,7 @@ void rebote(){
             reboteEmX -= 0.1f;
         }
     }else if(reboteEmZ > 0.1){
-        printf("rebote: %.2f\n", reboteEmZ);
+        //printf("rebote: %.2f\n", reboteEmZ);
         if(backupUltimoMovimentoCima){
             ballZ -= 0.05f;
             reboteEmZ -= 0.1f;
@@ -447,13 +374,17 @@ void display() {
     char texto[50];
     char texto2[50];
     char texto3[50];
+    char quantidadeGols[50];
     sprintf(texto, "ballZ: %.2f", ballZ);
     sprintf(texto2, "ballX: %.2f", ballX);
     sprintf(texto3, "Forca: %.2f", forca);
+    sprintf(quantidadeGols, "Gols marcados = %d", gols);
+
     glColor3f(1.0, 1.0, 1.0);
     renderText(10, 10, texto);
     renderText(10, 8, texto2); 
     renderText(10, 6, texto3);
+    renderText(10, 4, quantidadeGols);
     // =====================================
 
     rebote();    
