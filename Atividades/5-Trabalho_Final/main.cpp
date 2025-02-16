@@ -48,67 +48,54 @@ GLuint texturaID;
 // ======================== Protótipos de funções ========================
 void ultimoMovimento(int opcao);
 
-// ======================== Funções de desenho ========================
-// Função para desenhar a bola
-void desenhaBola() {
-    glPushMatrix();
-    glTranslatef(ballX, ballY, ballZ);
-    glutSolidSphere(0.5, 30, 30);
-    glPopMatrix();
-}
-
-// Função para desenhar a cabeça (esfera)
+// ======================= Funções de desenho do personagem =======================
 void desenhaCabeca() {
     glPushMatrix();
-    glTranslatef(0.0f, 2.0f, 0.0f);  // Posiciona a cabeça
-    glutSolidSphere(0.5, 30, 30);  // Cabeça com raio 0.5
+    glTranslatef(0.0f, 2.0f, 0.0f);  //posiciona a cabeca
+    glutSolidSphere(0.5, 30, 30);  //cabeca com raio 0.5
     glPopMatrix();
 }
 
-// Função para desenhar o tronco (cilindro)
 void desenhaTronco() {
     glPushMatrix();
-    glTranslatef(0.0f, 0.8f, 0.0f);  // Posiciona o tronco
-    glScalef(0.8f, 1.0f, 0.5f);  // Escala para criar o tronco
-    glutSolidCube(1.0);  // Tronco em forma de cubo
+    glTranslatef(0.0f, 0.8f, 0.0f);  //posiciona o tronco
+    glScalef(0.8f, 1.0f, 0.5f);  //escala para criar o tronco
+    glutSolidCube(1.0);  //tronco em forma de cubo
     glPopMatrix();
 }
 
-// Função para desenhar os braços (cilindros)
 void desenhaBracos() {
     glPushMatrix();
-    glTranslatef(-0.75f, 1.5f, 0.0f);  // Posição do braço esquerdo
-    glRotatef(90.0f, 1.0f, 0.0f, 0.0f);  // Roda para posição correta
+    glTranslatef(-0.75f, 1.5f, 0.0f);  //posicao do braço esquerdo
+    glRotatef(90.0f, 1.0f, 0.0f, 0.0f);  //roda para posição correta
     glScalef(0.5f, 0.5f, -1.0f);
-    glutSolidCube(1);  // Braço esquerdo
+    glutSolidCube(1);  //braco esquerdo
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(0.75f, 1.5f, 0.0f);  // Posição do braço direito
-    glRotatef(90.0f, 1.0f, 0.0f, 0.0f);  // Roda para posição correta
+    glTranslatef(0.75f, 1.5f, 0.0f);  //posicao do braço direito
+    glRotatef(90.0f, 1.0f, 0.0f, 0.0f);  //roda para posicao correta
     glScalef(0.5f, 0.5f, 1.0f);
-    glutSolidCube(1);  // Braço direito
+    glutSolidCube(1);  //braco direito
     glPopMatrix();
 }
 
-// Função para desenhar as pernas (cilindros)
 void desenhaPernas() {
     glPushMatrix();
-    glTranslatef(0.2f, -0.5f, 0.0f);  // Posição da perna esquerda
-    glRotatef(90.0f, 1.0f, 0.0f, 0.0f);  // Roda para posição correta
+    glTranslatef(0.2f, -0.5f, 0.0f);  //posicao da perna esquerda
+    glRotatef(90.0f, 1.0f, 0.0f, 0.0f);  //roda para posição correta
     glScalef(0.5f, 0.5f, 1.5f);
-    glutSolidCube(1.0);  // Perna esquerda
+    glutSolidCube(1.0);  //perna esquerda
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(-0.2f, -0.5f, 0.0f);  // Posição da perna direita
-    glRotatef(90.0f, 1.0f, 0.0f, 0.0f);  // Roda para posição correta
+    glTranslatef(-0.2f, -0.5f, 0.0f);  //posicao da perna direita
+    glRotatef(90.0f, 1.0f, 0.0f, 0.0f);  //roda para posição correta
     glScalef(0.5f, 0.5f, 1.5f);
-    glutSolidCube(1.0);  // Perna direita
+    glutSolidCube(1.0);  //perna direita
     glPopMatrix();
 }
 
-// Função para desenhar o boneco
 void desenhaBoneco() {
     glPushMatrix();
     glTranslatef(bonecoX, bonecoY, bonecoZ);
@@ -118,6 +105,8 @@ void desenhaBoneco() {
     desenhaPernas();
     glPopMatrix();
 }
+// ======================================================================
+
 GLuint texturaCampo;
 GLuint texturaPatrocionios;
 GLuint texturaPatrocioniosDireita;
@@ -169,6 +158,15 @@ void carregarTextura() {
     stbi_image_free(imagemPatrociniosDireita);
 }
 
+// ======================== Funções de desenho ========================
+// Função para desenhar a bola
+void desenhaBola() {
+    glPushMatrix();
+    glTranslatef(ballX, ballY, ballZ);
+    glutSolidSphere(0.5, 30, 30);
+    glPopMatrix();
+}
+
 void desenhaPlataforma() {
     glPushMatrix();
     
@@ -176,8 +174,6 @@ void desenhaPlataforma() {
 
     glBindTexture(GL_TEXTURE_2D, texturaCampo); // Aplica a textura carregada
     
-    //glDisable(GL_LIGHTING);  // Desativa a iluminação para a plataforma
-
     // Definindo as coordenadas de textura para o mapeamento
     glBegin(GL_QUADS);
         glNormal3f(0.0f, 1.0f, 0.0f);
@@ -190,7 +186,6 @@ void desenhaPlataforma() {
     glScalef(10.0f, 1.0f, 13.0f);  // Aumenta o tamanho da plataforma
     glutSolidCube(1.0);
 
-    //glEnable(GL_LIGHTING);  // Restaura a iluminação
     glDisable(GL_TEXTURE_2D); // Desativa o uso de texturas
     
     glPopMatrix();
@@ -200,7 +195,6 @@ void desenhaParedeGol(){
     // ================== barreira esquerda =====================
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texturaPatrocionios); 
-    //glDisable(GL_LIGHTING);
     
     // Desenha o plano texturizado na posição correta
     glBegin(GL_QUADS);
@@ -212,7 +206,6 @@ void desenhaParedeGol(){
     glEnd();
 
     glDisable(GL_TEXTURE_2D);
-    //glEnable(GL_LIGHTING);
 
     glPushMatrix();
         glTranslatef(-3.25f, -0.5f, -6.0f);
@@ -230,7 +223,6 @@ void desenhaParedeGol(){
 
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texturaPatrocioniosDireita); 
-    //glDisable(GL_LIGHTING);
     glBegin(GL_QUADS);
         glNormal3f(0.0f, 0.0f, 1.0f);
         glTexCoord2f(0.0f, 1.0f); glVertex3f(5.0, -1.5, -5.45);  // Canto inferior esquerdo
@@ -239,7 +231,6 @@ void desenhaParedeGol(){
         glTexCoord2f(0.0f, 0.0f); glVertex3f(5.0, 0.5, -5.45);   // Canto superior esquerdo
     glEnd();
     glDisable(GL_TEXTURE_2D);
-    //glEnable(GL_LIGHTING);
     // ===================================
     // trave direita
     glPushMatrix();
@@ -327,8 +318,9 @@ void desenhaArquibancadaFrente(){
     glPopMatrix();
 }
 // ======================================================================
+
 // ======================== Funções de movimento =======================
-// Atualiza a posição da bola de acordo com a gravidade
+// Atualiza a posicao da bola de acordo com a gravidade
 void atualizaPosicaoBolaY() {
     speedY += gravity;
     ballY += speedY;
@@ -430,7 +422,7 @@ void colisaoBolaParede(){
     float paredeDireita = 5.0f;
     float raioBola = 1.0f;
     
-    // Verifica se a bola colidiu com as paredes
+    //verifica se a bola colidiu com alguma parede
     if (paredeTras - ballZ >= raioBola) {
         if(ballX >= -1.75f && ballX <= 1.75f){
             printf("GOOOOOOOOLLL\n");
@@ -463,7 +455,9 @@ void colisaoBolaParede(){
     }
     glutPostRedisplay();
 }
+
 // ======================================================================
+
 void rebote(){
     if(reboteEmX > 0.1 ){
         printf("rebote: %.2f\n", reboteEmX);
@@ -492,14 +486,13 @@ void rebote(){
     }
     glutPostRedisplay();
 }
-// Função timer para atualizar a posição da bola
+
 void timer(int) {
     atualizaPosicaoBolaY();
     atualizaPosicaoBonecoY();
     glutTimerFunc(16, timer, 0);  // Atualiza a cada 16 ms
 }
 
-// Configuração da iluminação
 void configurarIluminacao() {
     GLfloat luzAmbiente[] = { 1.0f, 1.0f, 1.0f, 1.0f };  // (R, G, B, OPACIDADE), coloquei branca
     GLfloat luzDifusa[] = {  1.0f, 1.0f, 1.0f, 1.0f };  // (R, G, B, OPACIDADE), coloquei branca
@@ -514,12 +507,11 @@ void configurarIluminacao() {
     glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
 }
 
-// Função para configurar a câmera
 void configurarCamera() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0f, 1.0f, 1.0f, 100.0f);  // Projeção perspectiva
-    glTranslatef(0.0f, -2.0f, -20.0f);  // Posiciona a câmera atrás do jogador
+    gluPerspective(45.0f, 1.0f, 1.0f, 100.0f);
+    glTranslatef(0.0f, -2.0f, -20.0f);  //posiciona a camera atras do personagem
     glMatrixMode(GL_MODELVIEW);
 }
 
@@ -554,19 +546,23 @@ void ultimoMovimento(int opcao){
     }
 }
 
-// ======================== Funções de teclado =========================
+// ======================== Direcionais para control.personagem =========================
 void teclasEspeciais(int key, int x, int y) {
     if (key == GLUT_KEY_LEFT) {
-        bonecoX-=0.1f;  // Move para a esquerda
+        if(bonecoX > -4.5f)
+            bonecoX-=0.1f;  //para esquerda
         ultimoMovimento(1);
     } else if (key == GLUT_KEY_RIGHT) {
-        bonecoX+=0.1f; // Move para a direita
+        if(bonecoX < 4.0f)
+            bonecoX+=0.1f; //para direita
         ultimoMovimento(2);
     } else if (key == GLUT_KEY_DOWN) {
-        bonecoZ += 0.1f;  // Pula
+        if(bonecoZ < 6.0f)
+            bonecoZ += 0.1f;  //para tras
         ultimoMovimento(3);
     } else if (key == GLUT_KEY_UP) {
-        bonecoZ-=0.1f;  // Move para baixo
+        if(bonecoZ > -5.0f)
+            bonecoZ-=0.1f;  //para frente
         ultimoMovimento(4);
     }
     glutPostRedisplay();  // Atualiza a tela após o movimento
@@ -574,20 +570,20 @@ void teclasEspeciais(int key, int x, int y) {
 
 void teclado(unsigned char key, int x, int y) {
     switch (key) {
-        case 'a': angulo -= 0.1f; break;  // Gira para a esquerda
-        case 'd': angulo += 0.1f; break;  // Gira para a direita
-        case 'w': cameraY += 0.5f; break; // Sobe
-        case 's': cameraY -= 0.5f; break; // Desce
-        case 'q': raio -= 0.5f; break;    // Aproxima a câmera
-        case 'e': raio += 0.5f; break;    // Afasta a câmera
+        case 'a': angulo -= 0.1f; break;  //gira para a esquerda a camera
+        case 'd': angulo += 0.1f; break;  //gira para a direita a camera
+        case 'w': cameraY += 0.5f; break; //sobe a camera
+        case 's': cameraY -= 0.5f; break; //desce a camera
+        case 'q': raio -= 0.5f; break;    //aproxima a camera
+        case 'e': raio += 0.5f; break;    //afasta a camera
         case '+':
-            if(forca<14.0f){ 
+            if(forca<5.0f){ 
                 forca += 0.5f; 
                 printf("Força: %.2f\n", forca);
             }else{
                 printf("Força maxima atingida\n");
             }
-            break;   // Aumenta a força
+            break;   //aumenta a forca do personagem
         case '-':
             if(forca > 2.0f){
                 forca -= 0.5f; 
@@ -595,49 +591,54 @@ void teclado(unsigned char key, int x, int y) {
             }else{
                 printf("Força minima atingida\n");
             }
-            break;   // Diminui a força
-        case ' ': // Pula
+            break;   //diminui a força do personagem
+        case ' ': //persongem pula
             bonecoY+=2.0f;
             break;
-        case 27: exit(0); // Tecla ESC fecha o programa
+        case 27: exit(0); //esc - fecha o programa
     }
     glutPostRedisplay();
 }
 // ======================================================================
 
 void renderText(float x, float y, char *string) {
-    glRasterPos2f(x, y); // Define a posição do texto
+    glRasterPos2f(x, y); //posicao do texto
     for (char *c = string; *c != '\0'; c++) {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
     }
 }
-// Função para exibir a cena
+
+//exibicao da cena
 void display() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // Limpa a tela
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  //limpeza da tela
     glLoadIdentity();
     float cameraX = raio * sin(angulo);
     float cameraZ = raio * cos(angulo);
 
-    gluLookAt(cameraX, cameraY, cameraZ,  // Posição da câmera
-              0.0f, 0.0f, 0.0f,  // Olha para o centro
+    gluLookAt(cameraX, cameraY, cameraZ,  //aqui eu determino a posicao da camera
+              0.0f, 0.0f, 0.0f,  //voltada pro centro
               0.0f, 1.0f, 0.0f);
-    glViewport(0, 0, 1200, 900);  // Define a janela de visualização
-    configurarCamera();  // Configuração da câmera
-    configurarIluminacao();  // Configuração da iluminação
-    desenhaPlataforma();  // Desenha a plataforma
+
+    glViewport(0, 0, 1200, 900);
+
+    configurarCamera();
+    configurarIluminacao();
+
+    // ================== desenhos ================
+    desenhaPlataforma();
     desenhaParedeGol();
     desenhaArquibancadaDireita();
     desenhaArquibancadaFrente();
-    desenhaBola();  // Desenha a bola
-    desenhaBoneco();  // Desenha o boneco
-    
+    desenhaBola();
+    desenhaBoneco();
+    // ============================================
     
     atualizaPosicaoZ();
     atualizaPosicaoX();
     
     colisaoBolaParede();
 
-    // ========= Exibição de Textos =========
+    // ========= exibicao de textos na tela =========
     char texto[50];
     char texto2[50];
     char texto3[50];
@@ -648,15 +649,15 @@ void display() {
     renderText(10, 10, texto);
     renderText(10, 8, texto2); 
     renderText(10, 6, texto3);
+    // =====================================
 
     rebote();    
 
     colisaoBolaBoneco();
-    // =====================================
-
+    
     glFrustum(-1.0, 1.0, -1.0, 1.0, 1.0, 100.0); 
 
-    glutSwapBuffers();  // Troca os buffers
+    glutSwapBuffers();
 }
 
 int main(int argc, char** argv) {
@@ -665,22 +666,26 @@ int main(int argc, char** argv) {
     glutInitWindowSize(1200, 900);
     glutCreateWindow("Trabalho - Computação Gráfica");
 
-    // Inicializa o SDL para tocar musica
+    glViewport(0, 0, 1200, 900);
     
-    glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
-    glEnable(GL_TEXTURE_2D);  // Ativa o uso de texturas 2D
+    glEnable(GL_DEPTH_TEST);  //ativa o teste de profundidade
+    glEnable(GL_TEXTURE_2D);  //ativa o uso de texturas 2D
 
     carregarTextura();
-    // Configuração de projeção e visualização
-    glMatrixMode(GL_PROJECTION);
-    gluPerspective(45.0f, 1.33f, 0.1f, 100.0f);
-    glMatrixMode(GL_MODELVIEW);
-    glutDisplayFunc(display);  // Função de exibição
-    glutTimerFunc(16, timer, 0);  // Inicia o timer para atualizar a posição da bola
-    glutSpecialFunc(teclasEspeciais);  // Função para capturar teclas especiais
-    glutKeyboardFunc(teclado);
-    glutMainLoop();  // Inicia o loop principal do GLUT
 
-    // encerra o SDL
+    //configuracoes relacionadas a projecao
+    glMatrixMode(GL_PROJECTION);
+    gluPerspective(90.0f, 1.33f, 0.1f, 100.0f);
+    glMatrixMode(GL_MODELVIEW);
+
+    glutDisplayFunc(display);  // Função de exibição
+
+    glutTimerFunc(16, timer, 0);  // timer que atualiza a posY da bola e personagem
+
+    glutSpecialFunc(teclasEspeciais);  //teclas direcionais
+    glutKeyboardFunc(teclado); //letras e simbolos
+
+    glutMainLoop();  //loop do GLUT
+
     return 0;
 }
