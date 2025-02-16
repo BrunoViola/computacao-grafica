@@ -40,9 +40,9 @@ float reboteEmZ = 0.0f;
 
 int reboteEmAndamento = 0;
 
-float angulo = -0.5f;  // Ângulo de rotação
-float raio = 5.0f;    // Distância da câmera até o objeto
-float cameraY = 2.0f; // Altura da câmera
+float angulo = -0.5f;  //angulo de rotacao da camera
+float raio = 5.0f;    //distancia da camera ate o objeto
+float cameraY = 2.0f; //altura da camera
 
 
 // ======================== Protótipos de funções ========================
@@ -171,24 +171,23 @@ void colisaoBolaParede(){
             ballZ += 0.5f;
         }
     }else if(paredeFrente-ballZ<=raioBola){
-        printf("bateu\n");
+        //printf("bateu\n");
         reboteEmZ = speedZ;
         ultimoMovimento(0);
         ballZ-= 0.5f;
     }else if(paredeEsquerda-ballX>=raioBola){
-        printf("bateu\n");
+        //printf("bateu\n");
         reboteEmX = speedX;
         ultimoMovimento(0);
         ballX+=0.5f;
     }else if(paredeDireita-ballX<=raioBola){
-        printf("bateu\n");
+        //printf("bateu\n");
         reboteEmX = speedX;
         ultimoMovimento(0);
         ballX-=0.5f;
     }
     glutPostRedisplay();
 }
-// ======================================================================
 
 void rebote(){
     if(reboteEmX > 0.1 ){
@@ -218,11 +217,12 @@ void rebote(){
     }
     glutPostRedisplay();
 }
+// ======================================================================
 
 void timer(int) {
     atualizaPosicaoBolaY();
     atualizaPosicaoBonecoY();
-    glutTimerFunc(16, timer, 0);  // Atualiza a cada 16 ms
+    glutTimerFunc(16, timer, 0);  //atualiza a cada 16 ms
 }
 
 void configurarIluminacao() {
@@ -236,7 +236,7 @@ void configurarIluminacao() {
     
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-    glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
+    glEnable(GL_DEPTH_TEST);  //ativa o teste de profundidade
 }
 
 void configurarCamera() {
@@ -371,20 +371,15 @@ void display() {
     colisaoBolaParede();
 
     // ========= exibicao de textos na tela =========
-    char texto[50];
-    char texto2[50];
-    char texto3[50];
+    char taxaForca[50];
     char quantidadeGols[50];
-    sprintf(texto, "ballZ: %.2f", ballZ);
-    sprintf(texto2, "ballX: %.2f", ballX);
-    sprintf(texto3, "Forca: %.2f", forca);
+
+    sprintf(taxaForca, "     Forca: %.2f", forca);
     sprintf(quantidadeGols, "Gols marcados = %d", gols);
 
     glColor3f(1.0, 1.0, 1.0);
-    renderText(10, 10, texto);
-    renderText(10, 8, texto2); 
-    renderText(10, 6, texto3);
-    renderText(10, 4, quantidadeGols);
+    renderText(-1, 10, taxaForca);
+    renderText(-1, 9, quantidadeGols);
     // =====================================
 
     rebote();    
