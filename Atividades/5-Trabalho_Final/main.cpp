@@ -3,14 +3,15 @@
 #include <GL/glut.h>
 #include <stdio.h>
 #include <math.h>
+
 #include "arquibancada.h"
 #include "texturas.h"
 #include "personagem.h"
+#include "plataforma.h"
 
 float ballY = 2.0f;
 float ballX = 0.0f;
 float ballZ = 0.0f;
-
 
 float speedY = 0.0f;
 float speedYBoneco = 0.0f;
@@ -46,8 +47,6 @@ float cameraY = 2.0f; // Altura da câmera
 
 // ======================== Protótipos de funções ========================
 void ultimoMovimento(int opcao);
-
-
 // ======================================================================
 
 // ======================== Funções de desenho ========================
@@ -59,28 +58,7 @@ void desenhaBola() {
     glPopMatrix();
 }
 
-void desenhaPlataforma() {
-    glPushMatrix();
-    
-    glEnable(GL_TEXTURE_2D); //ativa o uso de texturas
-    glBindTexture(GL_TEXTURE_2D, texturaCampo); //aplica a textura carregada
-    
-    // Definindo as coordenadas de textura para o mapeamento
-    glBegin(GL_QUADS);
-        glNormal3f(0.0f, 1.0f, 0.0f);
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-5.0f, -1.5f, -6.5f);  // Canto inferior esquerdo
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(5.0f, -1.5f, -6.5f);   // Canto inferior direito
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(5.0f, -1.5f, 6.5f);    // Canto superior direito
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-5.0f, -1.5f, 6.5f);   // Canto superior esquerdo
-    glEnd();
-    glTranslatef(0.0f, -2.05f, 0.0f);
-    glScalef(10.0f, 1.0f, 13.0f);  //aumenta o tamanho da plataforma
-    glutSolidCube(1.0);
 
-    glDisable(GL_TEXTURE_2D); //desativa o uso de textura
-    
-    glPopMatrix();
-}
 
 void desenhaParedeGol(){
     // ================== barreira esquerda =====================
@@ -220,9 +198,9 @@ void atualizaPosicaoX(){
 // ======================================================================
 // ======================== Funções de colisão =========================
 void colisaoBolaBoneco(){
-    float dx = ballX - bonecoX;  // Diferença no eixo X
-    float dz = ballZ - bonecoZ; // Diferença no eixo Z
-    float distancia = sqrt(dx * dx + dz * dz);  // Distância euclidiana
+    float dx = ballX - bonecoX;  //diferenca no eixo X
+    float dz = ballZ - bonecoZ; //diferenca no eixo Z
+    float distancia = sqrt(dx * dx + dz * dz);  // calculo da distancia euclidiana
 
     float raioBoneco = 0.3f;
     float raioBola = 0.3f;
