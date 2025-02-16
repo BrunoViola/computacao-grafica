@@ -11,6 +11,7 @@ float bonecoY = 2.0f;
 float bonecoZ = 1.0f;
 
 float speedY = 0.0f;
+float speedYBoneco = 0.0f;
 float speedZ = 0.0f;
 float speedX = 0.0f;
 float forca = 2.0f;
@@ -203,16 +204,27 @@ void desenhaArquibancadaFrente(){
 // ======================================================================
 // ======================== Funções de movimento =======================
 // Atualiza a posição da bola de acordo com a gravidade
-void atualizaPosicao() {
+void atualizaPosicaoBolaY() {
     speedY += gravity;
     ballY += speedY;
-    bonecoY += speedY;
 
     // Verifica se a bola tocou a plataforma
     if (ballY <= -1.0f) {
         ballY = -1.0f;
-        bonecoY = 0.0f;
         speedY = -speedY * 0.8f;  // Faz a bola quicar com um fator de amortecimento
+    }
+
+    glutPostRedisplay();
+}
+
+void atualizaPosicaoBonecoY() {
+    speedYBoneco += gravity;
+    bonecoY += speedYBoneco;
+
+    // Verifica se o boneco tocou a plataforma
+    if (bonecoY <= 0.0f) {
+        bonecoY = 0.0f;
+        speedYBoneco = -speedYBoneco * 0.8f;  // Faz a bola quicar com um fator de amortecimento
     }
 
     glutPostRedisplay();
@@ -348,7 +360,8 @@ void rebote(){
 }
 // Função timer para atualizar a posição da bola
 void timer(int) {
-    atualizaPosicao();
+    atualizaPosicaoBolaY();
+    atualizaPosicaoBonecoY();
     glutTimerFunc(16, timer, 0);  // Atualiza a cada 16 ms (aproximadamente 60 FPS)
 }
 
@@ -462,6 +475,9 @@ void teclado(unsigned char key, int x, int y) {
                 printf("Força minima atingida\n");
             }
             break;   // Diminui a força
+        case ' ': // Pula
+            bonecoY+=2.0f;
+            break;
         case 27: exit(0); // Tecla ESC fecha o programa
     }
     glutPostRedisplay();
