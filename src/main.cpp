@@ -10,6 +10,7 @@
 #include "plataforma.h"
 #include "bolaParedeGol.h"
 #include "variaveisGlobais.h"
+#include "goleiro.h"
 
 int gols = 0; //quantidade de gols marcados
 
@@ -363,6 +364,10 @@ void display() {
     desenhaArquibancadaFrente();
     desenhaBola();
     desenhaBoneco();
+    desenhaGoleiro();
+    desenhaTorcedor(8, 4, 0, 1);
+    desenhaTorcedor(6, 2, 4, 1);
+    desenhaTorcedor(-2, 3, 9, 0);
     // ============================================
     
     atualizaPosicaoZ();

@@ -9,6 +9,7 @@ GLuint texturaPatrocionios;
 GLuint texturaPatrocioniosDireita;
 GLuint texturaCamisa;
 GLuint texturaCamisaVerso;
+GLuint texturaCamisaGoleiro;
 
 
 void carregarTextura() {
@@ -17,6 +18,7 @@ void carregarTextura() {
     int larguraPatrociniosDireita, alturaPatrociniosDireita, canaisPatrociniosDireita;
     int larguraCamisa, alturaCamisa, canaisCamisa;
     int larguraCamisaVerso, alturaCamisaVerso, canaisCamisaVerso;
+    int larguraCamisaGoleiro, alturaCamisaGoleiro, canaisCamisaGoleiro;
 
     unsigned char* imagem = stbi_load("campo.jpg", &largura, &altura, &canais, 0);
     if (imagem == NULL ) {
@@ -45,6 +47,12 @@ void carregarTextura() {
     unsigned char* imagemCamisaVerso = stbi_load("camisaVerso.jpg", &larguraCamisaVerso, &alturaCamisaVerso, &canaisCamisaVerso, STBI_rgb);
     if (imagemCamisaVerso == NULL ) {
         printf("Erro ao carregar a textura da camisaVerso\n");
+        return;
+    }
+
+    unsigned char* imagemCamisaGoleiro = stbi_load("camisaGoleiro.jpg", &larguraCamisaGoleiro, &alturaCamisaGoleiro, &canaisCamisaGoleiro, STBI_rgb);
+    if (imagemCamisaGoleiro == NULL ) {
+        printf("Erro ao carregar a textura da camisaGoleiro\n");
         return;
     }
 
@@ -78,9 +86,16 @@ void carregarTextura() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraCamisaVerso, alturaCamisaVerso, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemCamisaVerso);
 
+    glGenTextures(1, &texturaCamisaGoleiro);
+    glBindTexture(GL_TEXTURE_2D, texturaCamisaGoleiro);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraCamisaGoleiro, alturaCamisaGoleiro, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemCamisaGoleiro);
+
     stbi_image_free(imagem);
     stbi_image_free(imagemPatrocinios);
     stbi_image_free(imagemPatrociniosDireita);
     stbi_image_free(imagemCamisa);
     stbi_image_free(imagemCamisaVerso);
+    stbi_image_free(imagemCamisaGoleiro);
 }
