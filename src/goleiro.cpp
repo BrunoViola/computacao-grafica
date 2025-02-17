@@ -1,5 +1,8 @@
 #include "goleiro.h"
 
+float goleiroX = 0.0f;
+int orientacao = 1;
+
 void desenhaTroncoGoleiro() {
    glEnable(GL_TEXTURE_2D); // Ativa o uso de texturas
    glBindTexture(GL_TEXTURE_2D, texturaCamisaGoleiro); // Aplica a textura carregada
@@ -20,11 +23,44 @@ void desenhaTroncoGoleiro() {
 
 void desenhaGoleiro(){
    glPushMatrix();
-   glTranslatef(0, 0, -5);
+   glTranslatef(goleiroX, 0, -5);
    glRotatef(180, 0, 1, 0);
    desenhaCabeca();
    desenhaTroncoGoleiro();
    desenhaBracos();
    desenhaPernas();
    glPopMatrix();
+}
+
+//========== movimentacao do goleiro ==========
+void movimentaGoleiro(){
+   
+   if(orientacao == 1){
+      goleiroX += 0.01f;
+   }else{
+      goleiroX -= 0.01f;
+   }
+
+   if(goleiroX <= -1.5f){
+      orientacao = 1;
+   }else if(goleiroX >= 1.5f){
+      orientacao = 0;
+   }
+   //printf("goleiroX: %f\n", goleiroX);
+}
+//========== colisao bola com o goleiro ========
+void colisaoBolaGoleiro(){
+   float dx = ballX - goleiroX;  //diferenca no eixo X
+   float dz = ballZ + 5; //diferenca no eixo Z
+   float distancia = sqrt(dx * dx + dz * dz);  // calculo da distancia euclidiana
+
+   float raioBoneco = 0.3f;
+   float raioBola = 0.3f;
+   
+   if (distancia < (raioBoneco + raioBola)){
+      ballZ += 2.0f;
+      defesas ++;
+   }
+   
+   glutPostRedisplay();
 }

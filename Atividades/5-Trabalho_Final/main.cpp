@@ -310,7 +310,7 @@ void teclado(unsigned char key, int x, int y) {
         case 'q': raio -= 0.5f; break;    //aproxima a camera
         case 'e': raio += 0.5f; break;    //afasta a camera
         case '+':
-            if(forca<5.0f){ 
+            if(forca<10.0f){ 
                 forca += 0.5f; 
                 printf("Força: %.2f\n", forca);
             }else{
@@ -365,6 +365,7 @@ void display() {
     desenhaBola();
     desenhaBoneco();
     desenhaGoleiro();
+    movimentaGoleiro();
     desenhaTorcedor(8, 4, 0, 1);
     desenhaTorcedor(6, 2, 4, 1);
     desenhaTorcedor(-2, 3, 9, 0);
@@ -374,17 +375,21 @@ void display() {
     atualizaPosicaoX();
     
     colisaoBolaParede();
+    colisaoBolaGoleiro();
 
     // ========= exibicao de textos na tela =========
     char taxaForca[50];
     char quantidadeGols[50];
+    char quantidadeDefesas[50];
 
     sprintf(taxaForca, "     Forca: %.2f", forca);
     sprintf(quantidadeGols, "Gols marcados = %d", gols);
+    sprintf(quantidadeDefesas, "Defesas feitas = %d", defesas);
 
     glColor3f(1.0, 1.0, 1.0);
     renderText(-1, 10, taxaForca);
     renderText(-1, 9, quantidadeGols);
+    renderText(-1, 8, quantidadeDefesas);
     // =====================================
 
     rebote();    
