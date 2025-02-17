@@ -363,6 +363,9 @@ void display() {
     desenhaArquibancadaFrente();
     desenhaBola();
     desenhaBoneco();
+    desenhaTorcedor(8, 4, 0, 1);
+    desenhaTorcedor(6, 2, 4, 1);
+    desenhaTorcedor(-2, 3, 9, 0);
     // ============================================
     
     atualizaPosicaoZ();

@@ -1,0 +1,2 @@
+void desenhaArquibancadaFrente();
+void desenhaArquibancadaDireita();

@@ -1,5 +1,4 @@
 #include "arquibancada.h"
-#include "personagem.h"
 #include <GL/glut.h>
 
 
@@ -66,19 +65,5 @@ void desenhaArquibancadaDireita(){
    glTranslatef(8.0f, 2.0f, 1.5f);
    glScalef(1.0f, 1.0f, 16.0f);
    glutSolidCube(1.0);
-   glPopMatrix();
-}
-
-void desenhaTorcedor(int x, int y, int z, int rotacao){
-   glPushMatrix();
-   glTranslatef(x, y, z);
-   if(rotacao==1)
-      glRotatef(90, 0.0f, 1.0f, 0.0f);
-   else
-      glRotatef(0, 0.0f, 1.0f, 0.0f);
-   desenhaCabeca();
-   desenhaTronco();
-   desenhaBracos();
-   desenhaPernas();
    glPopMatrix();
 }
