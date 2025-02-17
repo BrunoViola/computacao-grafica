@@ -10,6 +10,8 @@ GLuint texturaPatrocioniosDireita;
 GLuint texturaCamisa;
 GLuint texturaCamisaVerso;
 GLuint texturaCamisaGoleiro;
+GLuint texturaCamisaGavioes;
+GLuint texturaCamisaTorcedor;
 
 
 void carregarTextura() {
@@ -19,6 +21,8 @@ void carregarTextura() {
     int larguraCamisa, alturaCamisa, canaisCamisa;
     int larguraCamisaVerso, alturaCamisaVerso, canaisCamisaVerso;
     int larguraCamisaGoleiro, alturaCamisaGoleiro, canaisCamisaGoleiro;
+    int larguraCamisaGavioes, alturaCamisaGavioes, canaisCamisaGavioes;
+    int larguraCamisaTorcedor, alturaCamisaTorcedor, canaisCamisaTorcedor;
 
     unsigned char* imagem = stbi_load("campo.jpg", &largura, &altura, &canais, 0);
     if (imagem == NULL ) {
@@ -56,6 +60,14 @@ void carregarTextura() {
         return;
     }
 
+    unsigned char* imagemCamisaGavioes = stbi_load("camisaGavioes.jpg", &larguraCamisaGavioes, &alturaCamisaGavioes, &canaisCamisaGavioes, STBI_rgb);
+    if (imagemCamisaGavioes == NULL ) {
+        printf("Erro ao carregar a textura da camisaGavioes\n");
+        return;
+    }
+
+    unsigned char* imagemCamisaTorcedor = stbi_load("segundaCamisaTorcedor.jpg", &larguraCamisaTorcedor, &alturaCamisaTorcedor, &canaisCamisaTorcedor, STBI_rgb);
+
     glGenTextures(1, &texturaCampo);
     glBindTexture(GL_TEXTURE_2D, texturaCampo);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -92,10 +104,24 @@ void carregarTextura() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraCamisaGoleiro, alturaCamisaGoleiro, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemCamisaGoleiro);
 
+    glGenTextures(1, &texturaCamisaGavioes);
+    glBindTexture(GL_TEXTURE_2D, texturaCamisaGavioes);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraCamisaGavioes, alturaCamisaGavioes, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemCamisaGavioes);
+
+    glGenTextures(1, &texturaCamisaTorcedor);
+    glBindTexture(GL_TEXTURE_2D, texturaCamisaTorcedor);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraCamisaTorcedor, alturaCamisaTorcedor, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemCamisaTorcedor);
+
     stbi_image_free(imagem);
     stbi_image_free(imagemPatrocinios);
     stbi_image_free(imagemPatrociniosDireita);
     stbi_image_free(imagemCamisa);
     stbi_image_free(imagemCamisaVerso);
     stbi_image_free(imagemCamisaGoleiro);
+    stbi_image_free(imagemCamisaGavioes);
+    stbi_image_free(imagemCamisaTorcedor);
 }

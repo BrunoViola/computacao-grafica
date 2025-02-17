@@ -7,5 +7,7 @@ extern GLuint texturaPatrocioniosDireita;
 extern GLuint texturaCamisa;
 extern GLuint texturaCamisaVerso;
 extern GLuint texturaCamisaGoleiro;
+extern GLuint texturaCamisaGavioes;
+extern GLuint texturaCamisaTorcedor;
 
 void carregarTextura();

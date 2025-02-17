@@ -68,17 +68,3 @@ void desenhaArquibancadaDireita(){
    glutSolidCube(1.0);
    glPopMatrix();
 }
-
-void desenhaTorcedor(int x, int y, int z, int rotacao){
-   glPushMatrix();
-   glTranslatef(x, y, z);
-   if(rotacao==1)
-      glRotatef(90, 0.0f, 1.0f, 0.0f);
-   else
-      glRotatef(0, 0.0f, 1.0f, 0.0f);
-   desenhaCabeca();
-   desenhaTronco();
-   desenhaBracos();
-   desenhaPernas();
-   glPopMatrix();
-}

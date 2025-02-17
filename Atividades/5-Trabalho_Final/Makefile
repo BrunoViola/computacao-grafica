@@ -9,7 +9,7 @@ OBJ_DIR = ../obj
 BIN_DIR = ../bin
 
 # Lista de arquivos-fonte
-SRCS = $(SRC_DIR)/main.cpp $(SRC_DIR)/glad.c $(SRC_DIR)/arquibancada.cpp $(SRC_DIR)/texturas.cpp $(SRC_DIR)/personagem.cpp $(SRC_DIR)/plataforma.cpp
+SRCS = $(SRC_DIR)/main.cpp $(SRC_DIR)/glad.c $(SRC_DIR)/arquibancada.cpp $(SRC_DIR)/texturas.cpp $(SRC_DIR)/personagem.cpp $(SRC_DIR)/plataforma.cpp $(SRC_DIR)/bolaParedeGol.cpp $(SRC_DIR)/variaveisGlobais.cpp $(SRC_DIR)/goleiro.cpp $(SRC_DIR)/torcedores.cpp
 
 # Gera nomes dos arquivos-objeto automaticamente
 OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS)))
@@ -35,5 +35,5 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Limpeza
-clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR)
+
+
