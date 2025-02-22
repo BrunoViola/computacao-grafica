@@ -33,7 +33,7 @@ void desenhaGoleiro(){
 }
 
 //========== movimentacao do goleiro ==========
-void movimentaGoleiro(){
+void movimentaGoleiroX(){
    
    if(orientacao == 1){
       goleiroX += 0.01f;
@@ -58,7 +58,11 @@ void colisaoBolaGoleiro(){
    float raioBola = 0.3f;
    
    if (distancia < (raioBoneco + raioBola)){
-      ballZ += 2.0f;
+      ballX = 0.0f;
+      ballZ = 3.0f;
+      ballY = 2.0f;
+      speedX = 0.0f;
+      speedZ = 0.0f;
       defesas ++;
    }
    

@@ -9,5 +9,5 @@ extern float goleiroX;
 extern int orientacao;
 
 void desenhaGoleiro();
-void movimentaGoleiro();
+void movimentaGoleiroX();
 void colisaoBolaGoleiro();

@@ -3,6 +3,9 @@
 
 void desenhaTorcedor(int x, int y, int z, int rotacao, int tipo);
 void desenhaTroncoGavioes();
+void desenhaTroncoTorcedorComum();
 void desenhaBracosGavioes();
-void movimentaTorcedor();
+void desenhaBracosTorcedorComum();
+void movimentaTorcedorY();
 void desenhaTorcedores();
+void movimentaGavioesZ();

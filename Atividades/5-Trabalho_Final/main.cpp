@@ -17,8 +17,6 @@ int gols = 0; //quantidade de gols marcados
 
 float speedY = 0.0f;
 float speedYBoneco = 0.0f;
-float speedZ = 0.0f;
-float speedX = 0.0f;
 float forca = 2.0f;
 
 float cameraPosX = -2.0f;
@@ -366,13 +364,15 @@ void display() {
     desenhaBola();
     desenhaBoneco();
     desenhaGoleiro();
-    movimentaGoleiro();
-    movimentaTorcedor();
     desenhaTorcedores();
     // ============================================
     
     atualizaPosicaoZ();
     atualizaPosicaoX();
+
+    movimentaGoleiroX();
+    movimentaTorcedorY(); //torcida geral
+    movimentaGavioesZ();
     
     colisaoBolaParede();
     colisaoBolaGoleiro();
@@ -396,8 +396,6 @@ void display() {
 
     colisaoBolaBoneco();
     
-    glFrustum(-1.0, 1.0, -1.0, 1.0, 1.0, 100.0); 
-
     glutSwapBuffers();
 }
 
@@ -416,7 +414,7 @@ int main(int argc, char** argv) {
 
     //configuracoes relacionadas a projecao
     glMatrixMode(GL_PROJECTION);
-    gluPerspective(90.0f, 1.33f, 0.1f, 100.0f);
+
     glMatrixMode(GL_MODELVIEW);
 
     glutDisplayFunc(display);  // Função de exibição
