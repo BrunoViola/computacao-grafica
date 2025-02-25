@@ -14,6 +14,7 @@
 #include "variaveisGlobais.h"
 #include "goleiro.h"
 #include "torcedores.h"
+#include "iluminacao.h"
 
 int gols = 0; //quantidade de gols marcados
 
@@ -42,7 +43,6 @@ float angulo = -0.5f;  //angulo de rotacao da camera
 float raio = 5.0f;    //distancia da camera ate o objeto
 float cameraY = 2.0f; //altura da camera
 
-int desligar = 0; //controle da iluminação
 // ======================== Protótipos de funções ========================
 void ultimoMovimento(int opcao);
 
@@ -225,35 +225,11 @@ void timer(int) {
     glutTimerFunc(16, timer, 0);  //atualiza a cada 16 ms
 }
 
-void configurarIluminacao() {
-    GLfloat luzAmbiente[] = { 0.5f, 0.5f, 0.5f, 1.0f };  // (R, G, B, OPACIDADE), coloquei branca
-    GLfloat luzDifusa[] = {  0.5f, 0.5f, 0.5f, 1.0f };  // (R, G, B, OPACIDADE), coloquei branca
-    GLfloat luzPosicao[] = { -5.0f, 10.0f, 9.0f, 1.0f };  // (X, Y, Z, TIPO)
-    GLfloat segundaLuzPosicao[] = { 8.0f, 10.0f, 9.0f, 1.0f };  // (X, Y, Z, TIPO)
-    
-    glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa);
-    glLightfv(GL_LIGHT0, GL_POSITION, luzPosicao);
-
-    glLightfv(GL_LIGHT1, GL_AMBIENT, luzAmbiente);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, luzDifusa);
-    glLightfv(GL_LIGHT1, GL_POSITION, segundaLuzPosicao);
-    
-    if(desligar == 0){
-        glEnable(GL_LIGHTING);
-        glEnable(GL_LIGHT0);
-        glEnable(GL_LIGHT1);
-    }else{
-        glDisable(GL_LIGHT0);
-        glDisable(GL_LIGHT1);
-    }
-}
-
 void configurarCamera() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(45.0f, 1.0f, 1.0f, 100.0f);//(campo de visão, largura/altura, limite proximo visivel, limite distante visivel)
-    glTranslatef(0.0f, -2.0f, -20.0f);  //posiciona a camera atras do personagem
+    glTranslatef(0.0f, -2.0f, -20.0f); //essa transformacao eh aplicada sobre os objetos
     glMatrixMode(GL_MODELVIEW);
 }
 
@@ -318,8 +294,10 @@ void teclado(unsigned char key, int x, int y) {
         case 's': cameraY -= 0.5f; break; //desce a camera
         case 'q': raio -= 0.5f; break;    //aproxima a camera
         case 'e': raio += 0.5f; break;    //afasta a camera
-        case 'l': desligar=1; break;
-        case 'L': desligar=0; break;
+        case 'l': desligarIluminacaoEsquerda=1; break;
+        case 'L': desligarIluminacaoEsquerda=0; break;
+        case 'r': desligarIluminacaoDireita=1; break;
+        case 'R': desligarIluminacaoDireita=0; break;
         case '+':
             if(forca<10.0f){ 
                 forca += 0.5f; 
@@ -367,18 +345,6 @@ void exibirTextos(){
     renderText(-1, 8, quantidadeDefesas);
 }
 
-void desenhaPosicaoIluminacao(){
-    glPushMatrix();
-    glTranslatef(-5.0f, 10.0f, 9.0f);
-    glutSolidSphere(0.5, 30, 30);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(8.0f, 10.0f, 9.0f);
-    glutSolidSphere(0.5, 30, 30);
-    glPopMatrix();
-}
-
 //exibicao da cena
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  //limpeza da tela
@@ -389,7 +355,6 @@ void display() {
     gluLookAt(cameraX, cameraY, cameraZ,  //aqui eu determino a posicao da camera
               0.0f, 0.0f, 0.0f,  //voltada pro centro
               0.0f, 1.0f, 0.0f);
-
     glViewport(0, 0, 1200, 900);
 
     configurarCamera();
@@ -416,13 +381,11 @@ void display() {
     
     colisaoBolaParede(); //verifica se foi gol ou determina o rebote da bola
     rebote(); //executa o rebote determinado pela colisaoBolaParede
-
     colisaoBolaGoleiro();
-  
-    exibirTextos(); //textos na tela
-
     colisaoBolaBoneco();
     
+    exibirTextos(); //textos na tela
+ 
     glutSwapBuffers();
 }
 

@@ -4,8 +4,13 @@
 extern float ballY;
 extern float ballX;
 extern float ballZ;
-extern int defesas;
+
 extern float speedX;
 extern float speedZ;
+
+extern int defesas;
+
+extern int desligarIluminacaoEsquerda;
+extern int desligarIluminacaoDireita;
 
 #endif
