@@ -8,6 +8,9 @@ extern float ballZ;
 extern float speedX;
 extern float speedZ;
 
+extern float forca;
+
+extern int gols;
 extern int defesas;
 
 extern int desligarIluminacaoEsquerda;

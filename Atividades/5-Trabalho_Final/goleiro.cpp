@@ -21,13 +21,29 @@ void desenhaTroncoGoleiro() {
    glDisable(GL_TEXTURE_2D);
 }
 
+void desenhaBracosGoleiro() {
+   glPushMatrix();
+   glTranslatef(-0.75f, 1.0f, 0.0f);  //posicao do braço esquerdo
+   glRotatef(70.0f, 0.0f, 1.0f, 0.0f);  //roda para posição correta
+   glScalef(0.5f, 0.5f, -1.0f);
+   glutSolidCube(1);  //braco esquerdo
+   glPopMatrix();
+
+   glPushMatrix();
+   glTranslatef(0.75f, 1.0f, 0.0f);  //posicao do braço direito
+   glRotatef(110.0f, 0.0f, 1.0f, 0.0f);  //roda para posicao correta
+   glScalef(0.5f, 0.5f, 1.0f);
+   glutSolidCube(1);  //braco direito
+   glPopMatrix();
+}
+
 void desenhaGoleiro(){
    glPushMatrix();
    glTranslatef(goleiroX, 0, -5);
    glRotatef(180, 0, 1, 0);
    desenhaCabeca();
    desenhaTroncoGoleiro();
-   desenhaBracos();
+   desenhaBracosGoleiro();
    desenhaPernas();
    glPopMatrix();
 }

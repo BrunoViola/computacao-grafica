@@ -15,12 +15,10 @@
 #include "goleiro.h"
 #include "torcedores.h"
 #include "iluminacao.h"
-
-int gols = 0; //quantidade de gols marcados
+#include "textos.h"
 
 float speedY = 0.0f;
 float speedYBoneco = 0.0f;
-float forca = 2.0f;
 
 const float gravity = -0.01f;
 
@@ -323,28 +321,6 @@ void teclado(unsigned char key, int x, int y) {
 }
 // ======================================================================
 
-void renderText(float x, float y, char *string) {
-    glRasterPos2f(x, y); //posicao do texto
-    for (char *c = string; *c != '\0'; c++) {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
-    }
-}
-
-void exibirTextos(){
-    char taxaForca[50];
-    char quantidadeGols[50];
-    char quantidadeDefesas[50];
-
-    sprintf(taxaForca, "     Forca: %.2f", forca);
-    sprintf(quantidadeGols, "Gols marcados = %d", gols);
-    sprintf(quantidadeDefesas, "Defesas feitas = %d", defesas);
-
-    glColor3f(1.0, 1.0, 1.0);
-    renderText(-1, 10, taxaForca);
-    renderText(-1, 9, quantidadeGols);
-    renderText(-1, 8, quantidadeDefesas);
-}
-
 //exibicao da cena
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  //limpeza da tela
@@ -369,7 +345,7 @@ void display() {
     desenhaBoneco();
     desenhaGoleiro();
     desenhaTorcedores();
-    desenhaPosicaoIluminacao();
+    //desenhaPosicaoIluminacao(); //mostra onde estao localizadas as iluminacoes
     // ============================================
     
     atualizaPosicaoZ();
