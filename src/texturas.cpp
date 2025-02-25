@@ -2,8 +2,7 @@
 #include <stb_image.h>
 #include "texturas.h"
 
-
-GLuint texturaID;
+//ids das imagens
 GLuint texturaCampo;
 GLuint texturaPatrocionios;
 GLuint texturaPatrocioniosDireita;
@@ -67,11 +66,15 @@ void carregarTextura() {
     }
 
     unsigned char* imagemCamisaTorcedor = stbi_load("segundaCamisaTorcedor.jpg", &larguraCamisaTorcedor, &alturaCamisaTorcedor, &canaisCamisaTorcedor, STBI_rgb);
+    if (imagemCamisaTorcedor == NULL ) {
+        printf("Erro ao carregar a textura da segundaCamisaTorcedor\n");
+        return;
+    }
 
-    glGenTextures(1, &texturaCampo);
-    glBindTexture(GL_TEXTURE_2D, texturaCampo);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glGenTextures(1, &texturaCampo); //essa funcao gera um id pra textura
+    glBindTexture(GL_TEXTURE_2D, texturaCampo); //linka o contexto com o id da textura
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//filtragem para quando a textura for reduzida, o gl_linear da uma suavizacao
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);//filtragem para quando a textura for ampliada
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, largura, altura, 0, GL_RGB, GL_UNSIGNED_BYTE, imagem);
     
     glGenTextures(1, &texturaPatrocionios);
@@ -116,6 +119,7 @@ void carregarTextura() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, larguraCamisaTorcedor, alturaCamisaTorcedor, 0, GL_RGB, GL_UNSIGNED_BYTE, imagemCamisaTorcedor);
 
+    //liberacao de memoria das imagens carregadas
     stbi_image_free(imagem);
     stbi_image_free(imagemPatrocinios);
     stbi_image_free(imagemPatrociniosDireita);

@@ -2,6 +2,8 @@
 #include <stb_image.h>
 #include <GL/glut.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h> 
 #include <math.h>
 
 #include "arquibancada.h"
@@ -18,10 +20,6 @@ int gols = 0; //quantidade de gols marcados
 float speedY = 0.0f;
 float speedYBoneco = 0.0f;
 float forca = 2.0f;
-
-float cameraPosX = -2.0f;
-float cameraPosY = 2.0f;
-float cameraPosZ = 1.0f;
 
 const float gravity = -0.01f;
 
@@ -44,10 +42,9 @@ float angulo = -0.5f;  //angulo de rotacao da camera
 float raio = 5.0f;    //distancia da camera ate o objeto
 float cameraY = 2.0f; //altura da camera
 
-
+int desligar = 0; //controle da iluminação
 // ======================== Protótipos de funções ========================
 void ultimoMovimento(int opcao);
-// ======================================================================
 
 // ======================== Funcoes de movimento =======================
 //atualiza a posicao da bola de acordo com a gravidade
@@ -63,7 +60,7 @@ void atualizaPosicaoBolaY() {
 
     glutPostRedisplay();
 }
-
+//atualiza a posicao do boneco de acordo com a gravidade
 void atualizaPosicaoBonecoY() {
     speedYBoneco += gravity;
     bonecoY += speedYBoneco;
@@ -77,6 +74,7 @@ void atualizaPosicaoBonecoY() {
     glutPostRedisplay();
 }
 
+//movimentacao da bola no eixo z
 void atualizaPosicaoZ(){
     if(speedZ==0 && !reboteEmAndamento){
         backupUltimoMovimentoBaixo = 0;
@@ -99,6 +97,7 @@ void atualizaPosicaoZ(){
     glutPostRedisplay();
 }
 
+//movimentacao da bola no eixo x
 void atualizaPosicaoX(){
     if(speedX==0 && !reboteEmAndamento){
         backupUltimoMovimentoDireita = 0;
@@ -120,7 +119,6 @@ void atualizaPosicaoX(){
     }
     glutPostRedisplay();
 }
-
 // =====================================================================
 
 // ======================== Funcoes de colisao =========================
@@ -159,8 +157,10 @@ void colisaoBolaParede(){
         if(ballX >= -1.75f && ballX <= 1.75f){
             printf("GOOOOOOOOLLL\n");
             gols++;
-            ballX = 0.0f;
-            ballZ = 3.0f;
+            srand(time(NULL));
+            //essas funcoes rand abaixo servem para reposicionar a bola de maneira aleatoria depois de um gol
+            ballX = (float)(rand()%8)-4;
+            ballZ = (float)(rand()%6);
             ballY = 2.0f;
             speedX = 0.0f;
             speedZ = 0.0f;
@@ -226,23 +226,33 @@ void timer(int) {
 }
 
 void configurarIluminacao() {
-    GLfloat luzAmbiente[] = { 1.0f, 1.0f, 1.0f, 1.0f };  // (R, G, B, OPACIDADE), coloquei branca
-    GLfloat luzDifusa[] = {  1.0f, 1.0f, 1.0f, 1.0f };  // (R, G, B, OPACIDADE), coloquei branca
-    GLfloat luzPosicao[] = { -4.0f, 10.0f, 6.0f, 1.0f };  // (X, Y, Z, TIPO)
-
+    GLfloat luzAmbiente[] = { 0.5f, 0.5f, 0.5f, 1.0f };  // (R, G, B, OPACIDADE), coloquei branca
+    GLfloat luzDifusa[] = {  0.5f, 0.5f, 0.5f, 1.0f };  // (R, G, B, OPACIDADE), coloquei branca
+    GLfloat luzPosicao[] = { -5.0f, 10.0f, 9.0f, 1.0f };  // (X, Y, Z, TIPO)
+    GLfloat segundaLuzPosicao[] = { 8.0f, 10.0f, 9.0f, 1.0f };  // (X, Y, Z, TIPO)
+    
     glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa);
     glLightfv(GL_LIGHT0, GL_POSITION, luzPosicao);
+
+    glLightfv(GL_LIGHT1, GL_AMBIENT, luzAmbiente);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, luzDifusa);
+    glLightfv(GL_LIGHT1, GL_POSITION, segundaLuzPosicao);
     
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_DEPTH_TEST);  //ativa o teste de profundidade
+    if(desligar == 0){
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
+        glEnable(GL_LIGHT1);
+    }else{
+        glDisable(GL_LIGHT0);
+        glDisable(GL_LIGHT1);
+    }
 }
 
 void configurarCamera() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0f, 1.0f, 1.0f, 100.0f);
+    gluPerspective(45.0f, 1.0f, 1.0f, 100.0f);//(campo de visão, largura/altura, limite proximo visivel, limite distante visivel)
     glTranslatef(0.0f, -2.0f, -20.0f);  //posiciona a camera atras do personagem
     glMatrixMode(GL_MODELVIEW);
 }
@@ -308,6 +318,8 @@ void teclado(unsigned char key, int x, int y) {
         case 's': cameraY -= 0.5f; break; //desce a camera
         case 'q': raio -= 0.5f; break;    //aproxima a camera
         case 'e': raio += 0.5f; break;    //afasta a camera
+        case 'l': desligar=1; break;
+        case 'L': desligar=0; break;
         case '+':
             if(forca<10.0f){ 
                 forca += 0.5f; 
@@ -340,6 +352,33 @@ void renderText(float x, float y, char *string) {
     }
 }
 
+void exibirTextos(){
+    char taxaForca[50];
+    char quantidadeGols[50];
+    char quantidadeDefesas[50];
+
+    sprintf(taxaForca, "     Forca: %.2f", forca);
+    sprintf(quantidadeGols, "Gols marcados = %d", gols);
+    sprintf(quantidadeDefesas, "Defesas feitas = %d", defesas);
+
+    glColor3f(1.0, 1.0, 1.0);
+    renderText(-1, 10, taxaForca);
+    renderText(-1, 9, quantidadeGols);
+    renderText(-1, 8, quantidadeDefesas);
+}
+
+void desenhaPosicaoIluminacao(){
+    glPushMatrix();
+    glTranslatef(-5.0f, 10.0f, 9.0f);
+    glutSolidSphere(0.5, 30, 30);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(8.0f, 10.0f, 9.0f);
+    glutSolidSphere(0.5, 30, 30);
+    glPopMatrix();
+}
+
 //exibicao da cena
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  //limpeza da tela
@@ -365,6 +404,7 @@ void display() {
     desenhaBoneco();
     desenhaGoleiro();
     desenhaTorcedores();
+    desenhaPosicaoIluminacao();
     // ============================================
     
     atualizaPosicaoZ();
@@ -374,25 +414,12 @@ void display() {
     movimentaTorcedorY(); //torcida geral
     movimentaGavioesZ();
     
-    colisaoBolaParede();
+    colisaoBolaParede(); //verifica se foi gol ou determina o rebote da bola
+    rebote(); //executa o rebote determinado pela colisaoBolaParede
+
     colisaoBolaGoleiro();
-
-    // ========= exibicao de textos na tela =========
-    char taxaForca[50];
-    char quantidadeGols[50];
-    char quantidadeDefesas[50];
-
-    sprintf(taxaForca, "     Forca: %.2f", forca);
-    sprintf(quantidadeGols, "Gols marcados = %d", gols);
-    sprintf(quantidadeDefesas, "Defesas feitas = %d", defesas);
-
-    glColor3f(1.0, 1.0, 1.0);
-    renderText(-1, 10, taxaForca);
-    renderText(-1, 9, quantidadeGols);
-    renderText(-1, 8, quantidadeDefesas);
-    // =====================================
-
-    rebote();    
+  
+    exibirTextos(); //textos na tela
 
     colisaoBolaBoneco();
     
@@ -419,7 +446,7 @@ int main(int argc, char** argv) {
 
     glutDisplayFunc(display);  // Função de exibição
 
-    glutTimerFunc(16, timer, 0);  // timer que atualiza a posY da bola e personagem
+    glutTimerFunc(16, timer, 0);  // timer que atualiza a posY da bola e personagem de forma mais suave
 
     glutSpecialFunc(teclasEspeciais);  //teclas direcionais
     glutKeyboardFunc(teclado); //letras e simbolos

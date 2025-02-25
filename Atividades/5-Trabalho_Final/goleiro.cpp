@@ -46,7 +46,6 @@ void movimentaGoleiroX(){
    }else if(goleiroX >= 1.5f){
       orientacao = 0;
    }
-   //printf("goleiroX: %f\n", goleiroX);
 }
 //========== colisao bola com o goleiro ========
 void colisaoBolaGoleiro(){
@@ -58,6 +57,7 @@ void colisaoBolaGoleiro(){
    float raioBola = 0.3f;
    
    if (distancia < (raioBoneco + raioBola)){
+      printf("Defendeu\n");
       ballX = 0.0f;
       ballZ = 3.0f;
       ballY = 2.0f;
