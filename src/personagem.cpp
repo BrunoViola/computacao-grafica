@@ -1,11 +1,6 @@
-#include "texturas.h"
 #include "personagem.h"
 
-float bonecoX = 0.0f;
-float bonecoY = 2.0f;
-float bonecoZ = 1.0f;
-
-// ======================= Funções de desenho do personagem =======================
+// ======================= Funcoes de desenho do personagem =======================
 void desenhaCabeca() {
    glPushMatrix();
    glTranslatef(0.0f, 2.0f, 0.0f);  //posiciona a cabeca
@@ -81,4 +76,37 @@ void desenhaBoneco() {
    desenhaBracos();
    desenhaPernas();
    glPopMatrix();
+}
+
+
+// ======================== Funcoes de movimento =======================
+void ultimoMovimento(int opcao){
+   if(opcao == 1){
+       ultimoMovimentoEsquerda = 1;
+       ultimoMovimentoDireita = 0;
+       ultimoMovimentoCima = 0;
+       ultimoMovimentoBaixo = 0;
+   } else if(opcao==2){
+       ultimoMovimentoEsquerda = 0;
+       ultimoMovimentoDireita = 1;
+       ultimoMovimentoCima = 0;
+       ultimoMovimentoBaixo = 0;
+   } else if(opcao==3){
+       ultimoMovimentoEsquerda = 0;
+       ultimoMovimentoDireita = 0;
+       ultimoMovimentoCima = 1;
+       ultimoMovimentoBaixo = 0;
+   } else if(opcao==4){
+       ultimoMovimentoEsquerda = 0;
+       ultimoMovimentoDireita = 0;
+       ultimoMovimentoCima = 0;
+       ultimoMovimentoBaixo = 1;
+   }else if(opcao==0){ //esse aqui serve para evitar que a bola fique se movendo sozinha perto da parede
+       ultimoMovimentoEsquerda = 0;
+       ultimoMovimentoDireita = 0;
+       ultimoMovimentoCima = 0;
+       ultimoMovimentoBaixo = 0;
+       speedX = 0.0f;
+       speedZ = 0.0f;
+   }
 }
