@@ -1,6 +1,6 @@
-﻿﻿```bash
-#🚧 Repositório sendo organizado 🚧
-```
+﻿﻿```
+#🚧 Repositório sendo organizado 🚧```
+
 
 # computação gráfica
 Este repositório armazena atividades e trabalhos produzidos ao longo da disciplina de Computação Gráfica.
