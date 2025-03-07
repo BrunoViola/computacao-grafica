@@ -100,10 +100,7 @@ void atualizaPosicaoBolaX(){
     glutPostRedisplay();
 }
 // =====================================================================
-
-
-// ======================================================================
-
+//funcao que atualiza a posicao da bola e boneco de acordo com a gravidade
 void timer(int) {
     atualizaPosicaoBolaY();
     atualizaPosicaoBonecoY();
@@ -117,8 +114,6 @@ void configurarCamera() {
     glTranslatef(0.0f, -2.0f, -20.0f); //essa transformacao eh aplicada sobre os objetos
     glMatrixMode(GL_MODELVIEW);
 }
-
-
 
 // ======================== Direcionais para controlar o personagem =========================
 void teclasEspeciais(int key, int x, int y) {
